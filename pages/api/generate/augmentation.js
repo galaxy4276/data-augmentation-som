@@ -19,23 +19,35 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log(`Attempting to POST to: ${BACKEND_URL}/api/generate/augmentation`);
+    console.log('Request body:', req.body);
+
     const response = await fetch(`${BACKEND_URL}/api/generate/augmentation`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...req.headers,
+        'User-Agent': 'Vercel-Serverless-Function',
       },
       body: JSON.stringify(req.body),
-    });
+      });
+
+    console.log(`Backend response status: ${response.status}`);
 
     if (!response.ok) {
-      throw new Error(`Backend responded with ${response.status}`);
+      console.error(`Backend error: ${response.status} ${response.statusText}`);
+      throw new Error(`Backend responded with ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
+    console.log('Backend response data:', data);
     res.status(200).json(data);
   } catch (error) {
-    console.error('Error proxying to backend:', error);
+    console.error('Full error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause
+    });
 
     // Fallback mock response
     const mockResponse = {

@@ -38,25 +38,36 @@ export default async function handler(req, res) {
     if (mbti) queryParams.append('mbti', mbti);
     if (search) queryParams.append('search', search);
 
+    console.log(`Attempting to fetch: ${BACKEND_URL}/api/datasets/${datasetType}/profiles?${queryParams}`);
+
     const response = await fetch(
       `${BACKEND_URL}/api/datasets/${datasetType}/profiles?${queryParams}`,
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          ...req.headers,
+          'User-Agent': 'Vercel-Serverless-Function',
         },
-      }
+        }
     );
 
+    console.log(`Backend response status: ${response.status}`);
+
     if (!response.ok) {
-      throw new Error(`Backend responded with ${response.status}`);
+      console.error(`Backend error: ${response.status} ${response.statusText}`);
+      throw new Error(`Backend responded with ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
+    console.log('Backend response data:', data);
     res.status(200).json(data);
   } catch (error) {
-    console.error('Error proxying to backend:', error);
+    console.error('Full error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause
+    });
 
     // Fallback mock data
     const mockProfiles = Array.from({ length: parseInt(page_size) }, (_, index) => ({

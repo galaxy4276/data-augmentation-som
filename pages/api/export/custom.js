@@ -1,6 +1,7 @@
 // Vercel Serverless Function for /api/export/custom
 const BACKEND_URL = 'http://119.67.194.202:31332';
 
+
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -19,17 +20,23 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log(`Attempting to POST to: ${BACKEND_URL}/api/export/custom`);
+    console.log('Request body:', req.body);
+
     const response = await fetch(`${BACKEND_URL}/api/export/custom`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...req.headers,
+        'User-Agent': 'Vercel-Serverless-Function',
       },
       body: JSON.stringify(req.body),
-    });
+        });
+
+    console.log(`Backend response status: ${response.status}`);
 
     if (!response.ok) {
-      throw new Error(`Backend responded with ${response.status}`);
+      console.error(`Backend error: ${response.status} ${response.statusText}`);
+      throw new Error(`Backend responded with ${response.status}: ${response.statusText}`);
     }
 
     // Handle CSV blob response
@@ -39,9 +46,15 @@ export default async function handler(req, res) {
       'Content-Disposition': response.headers.get('Content-Disposition') || 'attachment; filename=export.csv',
     };
 
+    console.log('Successfully processed CSV export response');
     res.status(200).setHeader(headers).send(Buffer.from(await blob.arrayBuffer()));
   } catch (error) {
-    console.error('Error proxying to backend:', error);
+    console.error('Full error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause
+    });
 
     // Fallback mock CSV response
     const mockCSV = `id,name,age,gender,mbti,created_at
