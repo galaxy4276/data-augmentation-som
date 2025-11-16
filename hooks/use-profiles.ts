@@ -1,15 +1,17 @@
-import { useQuery } from '@tanstack/react-query';
-import { datasetApi } from '@/lib/api';
+import { useQuery } from "@tanstack/react-query";
+import { datasetApi } from "@/lib/api";
 import type {
   DatasetType,
-  ProfileData,
-  ProfileSummary,
-  ProfileFilters,
   PaginationParams,
+  ProfileData,
+  ProfileFilters,
   ProfileListResponse,
-} from '@/types/api';
+  ProfileSummary,
+} from "@/types/api";
 
-interface UseProfilesParams extends Partial<ProfileFilters>, Partial<PaginationParams> {
+interface UseProfilesParams
+  extends Partial<ProfileFilters>,
+    Partial<PaginationParams> {
   datasetType: DatasetType;
 }
 
@@ -24,7 +26,7 @@ export function useProfiles({
   ...filters
 }: UseProfilesParams) {
   return useQuery<ProfileListResponse, Error>({
-    queryKey: ['profiles', datasetType, page, page_size, filters],
+    queryKey: ["profiles", datasetType, page, page_size, filters],
     queryFn: () =>
       datasetApi.getProfiles(datasetType, {
         page,
@@ -41,7 +43,7 @@ export function useProfiles({
  */
 export function useProfile(datasetType: DatasetType, profileId: string) {
   return useQuery<ProfileData, Error>({
-    queryKey: ['profile', datasetType, profileId],
+    queryKey: ["profile", datasetType, profileId],
     queryFn: () => datasetApi.getProfile(datasetType, profileId),
     enabled: !!profileId, // Only fetch if profileId is provided
     staleTime: 60000, // 1 minute

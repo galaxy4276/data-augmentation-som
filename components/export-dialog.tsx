@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Download, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { Download, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,12 +13,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useExportDataset } from '@/hooks/use-export-dataset';
-import { useTaskStore } from '@/store/task-store';
-import type { DatasetType, ProfileFilters } from '@/types/api';
+} from "@/components/ui/dialog";
+import { useExportDataset } from "@/hooks/use-export-dataset";
+import { useTaskStore } from "@/store/task-store";
+import type { DatasetType, ProfileFilters } from "@/types/api";
 
 interface ExportDialogProps {
   datasetType: DatasetType;
@@ -36,14 +36,16 @@ export function ExportDialog({
   const exportDataset = useExportDataset();
   const addExportHistory = useTaskStore((state) => state.addExportHistory);
 
-  const hasFilters = filters && Object.keys(filters).some((key) => {
-    const value = filters[key as keyof ProfileFilters];
-    return value !== undefined && value !== null && value !== '';
-  });
+  const hasFilters =
+    filters &&
+    Object.keys(filters).some((key) => {
+      const value = filters[key as keyof ProfileFilters];
+      return value !== undefined && value !== null && value !== "";
+    });
 
   const handleExport = async () => {
     const timestamp = new Date().toISOString();
-    const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+    const dateStr = new Date().toISOString().split("T")[0].replace(/-/g, "");
     const filename = `${datasetType}_export_${dateStr}.csv`;
 
     try {
@@ -59,16 +61,17 @@ export function ExportDialog({
         datasetType,
         filters: useCustomExport ? filters : undefined,
         filename,
-        status: 'success',
+        status: "success",
       });
 
-      toast.success('Export completed', {
+      toast.success("Export completed", {
         description: `Successfully exported ${filename}`,
       });
 
       setOpen(false);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
 
       // Log failed export
       addExportHistory({
@@ -76,14 +79,14 @@ export function ExportDialog({
         datasetType,
         filters: useCustomExport ? filters : undefined,
         filename,
-        status: 'error',
+        status: "error",
         error: errorMessage,
       });
 
-      toast.error('Export failed', {
+      toast.error("Export failed", {
         description: errorMessage,
         action: {
-          label: 'Retry',
+          label: "Retry",
           onClick: () => handleExport(),
         },
       });
@@ -112,7 +115,9 @@ export function ExportDialog({
           {/* Dataset Type */}
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Dataset Type:</span>
-            <Badge variant={datasetType === 'validation' ? 'default' : 'secondary'}>
+            <Badge
+              variant={datasetType === "validation" ? "default" : "secondary"}
+            >
               {datasetType}
             </Badge>
           </div>
@@ -121,7 +126,9 @@ export function ExportDialog({
           {totalProfiles !== undefined && (
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Total Profiles:</span>
-              <span className="text-sm text-muted-foreground">{totalProfiles}</span>
+              <span className="text-sm text-muted-foreground">
+                {totalProfiles}
+              </span>
             </div>
           )}
 
@@ -165,23 +172,27 @@ export function ExportDialog({
                     <div className="mt-2 space-y-1">
                       {filters?.gender && (
                         <div className="text-xs">
-                          <span className="font-medium">Gender:</span> {filters.gender}
+                          <span className="font-medium">Gender:</span>{" "}
+                          {filters.gender}
                         </div>
                       )}
                       {(filters?.age_min || filters?.age_max) && (
                         <div className="text-xs">
-                          <span className="font-medium">Age:</span>{' '}
-                          {filters.age_min || 'any'} - {filters.age_max || 'any'}
+                          <span className="font-medium">Age:</span>{" "}
+                          {filters.age_min || "any"} -{" "}
+                          {filters.age_max || "any"}
                         </div>
                       )}
                       {filters?.mbti && (
                         <div className="text-xs">
-                          <span className="font-medium">MBTI:</span> {filters.mbti}
+                          <span className="font-medium">MBTI:</span>{" "}
+                          {filters.mbti}
                         </div>
                       )}
                       {filters?.search && (
                         <div className="text-xs">
-                          <span className="font-medium">Search:</span> {filters.search}
+                          <span className="font-medium">Search:</span>{" "}
+                          {filters.search}
                         </div>
                       )}
                     </div>
@@ -196,8 +207,8 @@ export function ExportDialog({
             <div className="font-medium mb-1">Export Format:</div>
             <div>
               CSV file with columns: id, dataset_type, age, gender, name, mbti,
-              introduction, university, department, image_paths, preferences_self,
-              preferences_partner, match_score, partner_id
+              introduction, university, department, image_paths,
+              preferences_self, preferences_partner, match_score, partner_id
             </div>
           </div>
         </div>
@@ -210,10 +221,7 @@ export function ExportDialog({
           >
             Cancel
           </Button>
-          <Button
-            onClick={handleExport}
-            disabled={exportDataset.isPending}
-          >
+          <Button onClick={handleExport} disabled={exportDataset.isPending}>
             {exportDataset.isPending ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

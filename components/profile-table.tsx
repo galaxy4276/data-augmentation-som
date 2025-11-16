@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useMemo } from 'react';
 import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getPaginationRowModel,
-  flexRender,
   type ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
   type SortingState,
-} from '@tanstack/react-table';
-import { useState } from 'react';
-import { ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+  useReactTable,
+} from "@tanstack/react-table";
+import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ExportDialog } from "@/components/export-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -21,9 +21,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { ExportDialog } from '@/components/export-dialog';
-import type { ProfileData, ProfileSummary, DatasetType, ProfileFilters } from '@/types/api';
+} from "@/components/ui/table";
+import type {
+  DatasetType,
+  ProfileData,
+  ProfileFilters,
+  ProfileSummary,
+} from "@/types/api";
 
 interface ProfileTableProps {
   profiles: ProfileSummary[];
@@ -53,12 +57,14 @@ export function ProfileTable({
   const columns = useMemo<ColumnDef<ProfileSummary>[]>(
     () => [
       {
-        accessorKey: 'name',
+        accessorKey: "name",
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               className="hover:bg-transparent"
             >
               Name
@@ -67,18 +73,18 @@ export function ProfileTable({
           );
         },
         cell: ({ row }) => {
-          return (
-            <div className="font-medium">{row.original.name}</div>
-          );
+          return <div className="font-medium">{row.original.name}</div>;
         },
       },
       {
-        accessorKey: 'age',
+        accessorKey: "age",
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               className="hover:bg-transparent"
             >
               Age
@@ -91,12 +97,14 @@ export function ProfileTable({
         },
       },
       {
-        accessorKey: 'gender',
+        accessorKey: "gender",
         header: ({ column }) => {
           return (
             <Button
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               className="hover:bg-transparent"
             >
               Gender
@@ -107,36 +115,34 @@ export function ProfileTable({
         cell: ({ row }) => {
           const gender = row.original.gender;
           return (
-            <Badge variant={gender === 'MALE' ? 'default' : 'secondary'}>
+            <Badge variant={gender === "MALE" ? "default" : "secondary"}>
               {gender}
             </Badge>
           );
         },
       },
       {
-        accessorKey: 'mbti',
-        header: 'MBTI',
+        accessorKey: "mbti",
+        header: "MBTI",
         cell: ({ row }) => {
-          return (
-            <Badge variant="outline">{row.original.mbti}</Badge>
-          );
+          return <Badge variant="outline">{row.original.mbti}</Badge>;
         },
       },
       {
-        accessorKey: 'dataset_type',
-        header: 'Dataset Type',
+        accessorKey: "dataset_type",
+        header: "Dataset Type",
         cell: ({ row }) => {
           const type = row.original.dataset_type;
           return (
-            <Badge variant={type === 'validation' ? 'default' : 'secondary'}>
+            <Badge variant={type === "validation" ? "default" : "secondary"}>
               {type}
             </Badge>
           );
         },
       },
       {
-        accessorKey: 'image_count',
-        header: 'Images',
+        accessorKey: "image_count",
+        header: "Images",
         cell: ({ row }) => {
           const imageCount = row.original.image_count;
           return (
@@ -147,7 +153,7 @@ export function ProfileTable({
         },
       },
     ],
-    []
+    [],
   );
 
   const table = useReactTable({
@@ -212,9 +218,9 @@ export function ProfileTable({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </TableHead>
                 ))}
               </TableRow>

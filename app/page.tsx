@@ -1,13 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useDatasets } from '@/hooks/use-datasets';
-import { useExtractValidation, useGenerateAugmentation } from '@/hooks/use-task-mutations';
-import { useTaskStore } from '@/store/task-store';
-import { DatasetStatsCard } from '@/components/dataset-stats-card';
-import { TaskProgressBar } from '@/components/task-progress-bar';
-import { Button } from '@/components/ui/button';
+import Link from "next/link";
+import { useState } from "react";
+import { DatasetStatsCard } from "@/components/dataset-stats-card";
+import { TaskProgressBar } from "@/components/task-progress-bar";
+import { Button } from "@/components/ui/button";
+import { useDatasets } from "@/hooks/use-datasets";
+import {
+  useExtractValidation,
+  useGenerateAugmentation,
+} from "@/hooks/use-task-mutations";
+import { useTaskStore } from "@/store/task-store";
 
 export default function Home() {
   const { data: datasets, isLoading: isDatasetsLoading } = useDatasets();
@@ -17,21 +20,27 @@ export default function Home() {
 
   // Convert Map to array and filter running tasks
   const runningTasks = Array.from(activeTasks.values()).filter(
-    (task) => task.status === 'pending' || task.status === 'running'
+    (task) => task.status === "pending" || task.status === "running",
   );
 
   const [augmentationCount, setAugmentationCount] = useState(1000);
 
   // Find test (backend: validation) and learning datasets
-  const datasetsArray = Array.isArray(datasets) ? datasets : datasets?.items || [];
-  const testDataset = datasetsArray?.find((d) => d.dataset_type === 'validation');
-  const learningDataset = datasetsArray?.find((d) => d.dataset_type === 'learning');
+  const datasetsArray = Array.isArray(datasets)
+    ? datasets
+    : datasets?.items || [];
+  const testDataset = datasetsArray?.find(
+    (d) => d.dataset_type === "validation",
+  );
+  const learningDataset = datasetsArray?.find(
+    (d) => d.dataset_type === "learning",
+  );
 
   const handleExtractTest = async () => {
     try {
       await extractValidation.mutateAsync();
     } catch (error) {
-      console.error('Failed to start test extraction:', error);
+      console.error("Failed to start test extraction:", error);
     }
   };
 
@@ -42,7 +51,7 @@ export default function Home() {
         batch_size: 100,
       });
     } catch (error) {
-      console.error('Failed to start augmentation generation:', error);
+      console.error("Failed to start augmentation generation:", error);
     }
   };
 
@@ -93,16 +102,21 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Test Extraction */}
             <div className="p-6 border rounded-lg bg-card">
-              <h3 className="text-lg font-semibold mb-2">Extract Test Dataset</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Extract Test Dataset
+              </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Extract 282 mutual like pairs from production database with images from S3
+                Extract 282 mutual like pairs from production database with
+                images from S3
               </p>
               <button
                 onClick={handleExtractTest}
                 disabled={extractValidation.isPending}
                 className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
               >
-                {extractValidation.isPending ? 'Starting...' : 'Start Extraction'}
+                {extractValidation.isPending
+                  ? "Starting..."
+                  : "Start Extraction"}
               </button>
               {extractValidation.isError && (
                 <div className="mt-2 text-xs text-red-600 dark:text-red-400">
@@ -113,12 +127,17 @@ export default function Home() {
 
             {/* Augmentation Generation */}
             <div className="p-6 border rounded-lg bg-card">
-              <h3 className="text-lg font-semibold mb-2">Generate Learning Dataset</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Generate Learning Dataset
+              </h3>
               <p className="text-sm text-muted-foreground mb-4">
                 Generate synthetic profiles using AI (Replicate + LangChain)
               </p>
               <div className="mb-4">
-                <label htmlFor="augmentation-count" className="block text-sm font-medium mb-2">
+                <label
+                  htmlFor="augmentation-count"
+                  className="block text-sm font-medium mb-2"
+                >
                   Target Count
                 </label>
                 <input
@@ -137,7 +156,9 @@ export default function Home() {
                 disabled={generateAugmentation.isPending}
                 className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
               >
-                {generateAugmentation.isPending ? 'Starting...' : 'Start Generation'}
+                {generateAugmentation.isPending
+                  ? "Starting..."
+                  : "Start Generation"}
               </button>
               {generateAugmentation.isError && (
                 <div className="mt-2 text-xs text-red-600 dark:text-red-400">
@@ -172,13 +193,17 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-3xl font-bold text-primary">
-                {(testDataset?.stats?.total_profiles || 0) + (learningDataset?.stats?.total_profiles || 0)}
+                {(testDataset?.stats?.total_profiles || 0) +
+                  (learningDataset?.stats?.total_profiles || 0)}
               </div>
-              <div className="text-sm text-muted-foreground">Total Profiles</div>
+              <div className="text-sm text-muted-foreground">
+                Total Profiles
+              </div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-primary">
-                {(testDataset?.stats?.total_images || 0) + (learningDataset?.stats?.total_images || 0)}
+                {(testDataset?.stats?.total_images || 0) +
+                  (learningDataset?.stats?.total_images || 0)}
               </div>
               <div className="text-sm text-muted-foreground">Total Images</div>
             </div>
@@ -192,7 +217,9 @@ export default function Home() {
               <div className="text-3xl font-bold text-primary">
                 {learningDataset?.stats?.total_profiles || 0}
               </div>
-              <div className="text-sm text-muted-foreground">Learning Profiles</div>
+              <div className="text-sm text-muted-foreground">
+                Learning Profiles
+              </div>
             </div>
           </div>
         </div>

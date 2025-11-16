@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { X, User, Heart, Calendar, MapPin } from 'lucide-react';
+import { Calendar, Heart, MapPin, User, X } from "lucide-react";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import type { ProfileData } from '@/types/api';
+} from "@/components/ui/dialog";
+import type { ProfileData } from "@/types/api";
 
 interface ProfileDetailModalProps {
   profile: ProfileData | null;
@@ -38,21 +38,27 @@ export function ProfileDetailModal({
   const selectedImage = sortedImages[selectedImageIndex];
 
   // Group preferences by category
-  const selfPreferences = preferences.self_preferences.reduce((acc, pref) => {
-    if (!acc[pref.category]) {
-      acc[pref.category] = [];
-    }
-    acc[pref.category].push(pref);
-    return acc;
-  }, {} as Record<string, typeof preferences.self_preferences>);
+  const selfPreferences = preferences.self_preferences.reduce(
+    (acc, pref) => {
+      if (!acc[pref.category]) {
+        acc[pref.category] = [];
+      }
+      acc[pref.category].push(pref);
+      return acc;
+    },
+    {} as Record<string, typeof preferences.self_preferences>,
+  );
 
-  const partnerPreferences = preferences.partner_preferences.reduce((acc, pref) => {
-    if (!acc[pref.category]) {
-      acc[pref.category] = [];
-    }
-    acc[pref.category].push(pref);
-    return acc;
-  }, {} as Record<string, typeof preferences.partner_preferences>);
+  const partnerPreferences = preferences.partner_preferences.reduce(
+    (acc, pref) => {
+      if (!acc[pref.category]) {
+        acc[pref.category] = [];
+      }
+      acc[pref.category].push(pref);
+      return acc;
+    },
+    {} as Record<string, typeof preferences.partner_preferences>,
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -60,7 +66,9 @@ export function ProfileDetailModal({
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <span>Profile Details</span>
-            <Badge variant={dataset_type === 'validation' ? 'default' : 'secondary'}>
+            <Badge
+              variant={dataset_type === "validation" ? "default" : "secondary"}
+            >
               {dataset_type}
             </Badge>
           </DialogTitle>
@@ -69,7 +77,9 @@ export function ProfileDetailModal({
         <div className="space-y-6">
           {/* Image Gallery */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Images ({profile_images.length})</h3>
+            <h3 className="text-lg font-semibold">
+              Images ({profile_images.length})
+            </h3>
 
             {/* Main Image Display */}
             <div className="relative aspect-[3/4] bg-muted rounded-lg overflow-hidden">
@@ -84,7 +94,7 @@ export function ProfileDetailModal({
                       if (e.currentTarget.src !== selectedImage.s3_url) {
                         e.currentTarget.src = selectedImage.s3_url;
                       } else {
-                        e.currentTarget.src = '/placeholder-image.png';
+                        e.currentTarget.src = "/placeholder-image.png";
                       }
                     }}
                   />
@@ -108,10 +118,11 @@ export function ProfileDetailModal({
                   <button
                     key={image.id}
                     onClick={() => setSelectedImageIndex(index)}
-                    className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all ${index === selectedImageIndex
-                        ? 'border-primary'
-                        : 'border-transparent hover:border-muted-foreground'
-                      }`}
+                    className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all ${
+                      index === selectedImageIndex
+                        ? "border-primary"
+                        : "border-transparent hover:border-muted-foreground"
+                    }`}
                   >
                     <img
                       src={image.static_url || image.s3_url}
@@ -122,13 +133,15 @@ export function ProfileDetailModal({
                         if (e.currentTarget.src !== image.s3_url) {
                           e.currentTarget.src = image.s3_url;
                         } else {
-                          e.currentTarget.src = '/placeholder-image.png';
+                          e.currentTarget.src = "/placeholder-image.png";
                         }
                       }}
                     />
                     {image.is_main && (
                       <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                        <span className="text-xs font-bold text-white">Main</span>
+                        <span className="text-xs font-bold text-white">
+                          Main
+                        </span>
                       </div>
                     )}
                   </button>
@@ -151,7 +164,9 @@ export function ProfileDetailModal({
               </div>
               <div>
                 <div className="text-sm text-muted-foreground mb-1">Gender</div>
-                <Badge variant={profile.gender === 'MALE' ? 'default' : 'secondary'}>
+                <Badge
+                  variant={profile.gender === "MALE" ? "default" : "secondary"}
+                >
                   {profile.gender}
                 </Badge>
               </div>
@@ -161,14 +176,20 @@ export function ProfileDetailModal({
               </div>
               <div className="col-span-2">
                 <div className="text-sm text-muted-foreground mb-1">Title</div>
-                <div className="font-medium">{profile.title || 'Not specified'}</div>
+                <div className="font-medium">
+                  {profile.title || "Not specified"}
+                </div>
               </div>
               {profile.university_info && (
                 <div className="col-span-2">
-                  <div className="text-sm text-muted-foreground mb-1">University</div>
+                  <div className="text-sm text-muted-foreground mb-1">
+                    University
+                  </div>
                   <div className="font-medium">
-                    {profile.university_info.university_name} - {profile.university_info.department_name}
-                    {profile.university_info.grade && ` (${profile.university_info.grade})`}
+                    {profile.university_info.university_name} -{" "}
+                    {profile.university_info.department_name}
+                    {profile.university_info.grade &&
+                      ` (${profile.university_info.grade})`}
                   </div>
                 </div>
               )}
@@ -189,22 +210,32 @@ export function ProfileDetailModal({
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-muted-foreground">MBTI Good Match:</span>{' '}
-                  <span className="font-medium">{preferences.good_mbti || 'Not specified'}</span>
+                  <span className="text-muted-foreground">
+                    MBTI Good Match:
+                  </span>{" "}
+                  <span className="font-medium">
+                    {preferences.good_mbti || "Not specified"}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">MBTI Bad Match:</span>{' '}
-                  <span className="font-medium">{preferences.bad_mbti || 'Not specified'}</span>
+                  <span className="text-muted-foreground">MBTI Bad Match:</span>{" "}
+                  <span className="font-medium">
+                    {preferences.bad_mbti || "Not specified"}
+                  </span>
                 </div>
                 <div className="col-span-2">
-                  <span className="text-muted-foreground">Max Distance:</span>{' '}
-                  <span className="font-medium">{preferences.distance_max || 'Not specified'}</span>
+                  <span className="text-muted-foreground">Max Distance:</span>{" "}
+                  <span className="font-medium">
+                    {preferences.distance_max || "Not specified"}
+                  </span>
                 </div>
               </div>
 
               {Object.entries(selfPreferences).map(([category, prefs]) => (
                 <div key={category} className="border-t pt-3">
-                  <div className="text-sm font-medium mb-2 capitalize">{category}</div>
+                  <div className="text-sm font-medium mb-2 capitalize">
+                    {category}
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {prefs.map((pref, idx) => (
                       <Badge key={idx} variant="secondary">
@@ -223,7 +254,9 @@ export function ProfileDetailModal({
             <div className="space-y-3">
               {Object.entries(partnerPreferences).map(([category, prefs]) => (
                 <div key={category} className="border-t pt-3">
-                  <div className="text-sm font-medium mb-2 capitalize">{category}</div>
+                  <div className="text-sm font-medium mb-2 capitalize">
+                    {category}
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {prefs.map((pref, idx) => (
                       <Badge key={idx} variant="outline">
@@ -245,21 +278,25 @@ export function ProfileDetailModal({
               </h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-muted-foreground">Connection ID:</span>{' '}
-                  <span className="font-mono text-xs">{match_data.connection_id}</span>
+                  <span className="text-muted-foreground">Connection ID:</span>{" "}
+                  <span className="font-mono text-xs">
+                    {match_data.connection_id}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Match Score:</span>{' '}
+                  <span className="text-muted-foreground">Match Score:</span>{" "}
                   <span className="font-medium">{match_data.score}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Mutual Like:</span>{' '}
-                  <Badge variant={match_data.mutual_like ? 'default' : 'secondary'}>
-                    {match_data.mutual_like ? 'Yes' : 'No'}
+                  <span className="text-muted-foreground">Mutual Like:</span>{" "}
+                  <Badge
+                    variant={match_data.mutual_like ? "default" : "secondary"}
+                  >
+                    {match_data.mutual_like ? "Yes" : "No"}
                   </Badge>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Match Date:</span>{' '}
+                  <span className="text-muted-foreground">Match Date:</span>{" "}
                   <span className="font-medium">
                     {new Date(match_data.match_date).toLocaleDateString()}
                   </span>
@@ -270,12 +307,20 @@ export function ProfileDetailModal({
                 <div className="text-sm font-medium mb-2">Partner Info</div>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Partner User ID:</span>{' '}
-                    <span className="font-medium">{match_data.partner_user_id}</span>
+                    <span className="text-muted-foreground">
+                      Partner User ID:
+                    </span>{" "}
+                    <span className="font-medium">
+                      {match_data.partner_user_id}
+                    </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Partner Profile ID:</span>{' '}
-                    <span className="font-medium">{match_data.partner_profile_id}</span>
+                    <span className="text-muted-foreground">
+                      Partner Profile ID:
+                    </span>{" "}
+                    <span className="font-medium">
+                      {match_data.partner_profile_id}
+                    </span>
                   </div>
                 </div>
               </div>

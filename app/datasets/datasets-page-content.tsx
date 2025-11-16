@@ -1,41 +1,43 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
-import { useProfiles, useProfile } from '@/hooks/use-profiles';
-import { useDatasetStore } from '@/store/dataset-store';
-import { ProfileTable } from '@/components/profile-table';
-import { ProfileFilters } from '@/components/profile-filters';
-import { ProfileDetailModal } from '@/components/profile-detail-modal';
-import { Button } from '@/components/ui/button';
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { ProfileDetailModal } from "@/components/profile-detail-modal";
+import { ProfileFilters } from "@/components/profile-filters";
+import { ProfileTable } from "@/components/profile-table";
+import { Button } from "@/components/ui/button";
+import { useProfile, useProfiles } from "@/hooks/use-profiles";
+import { useDatasetStore } from "@/store/dataset-store";
 import type {
   ProfileData,
-  ProfileSummary,
   ProfileFilters as ProfileFiltersType,
-} from '@/types/api';
+  ProfileSummary,
+} from "@/types/api";
 
 export default function DatasetsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { filters, setFilters } = useDatasetStore();
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(
+    null,
+  );
 
   // Initialize filters from URL on mount
   useEffect(() => {
     const urlFilters: ProfileFiltersType = {
-      dataset_type: (searchParams.get('dataset_type') as any) || undefined,
-      gender: (searchParams.get('gender') as any) || undefined,
-      age_min: searchParams.get('age_min')
-        ? Number(searchParams.get('age_min'))
+      dataset_type: (searchParams.get("dataset_type") as any) || undefined,
+      gender: (searchParams.get("gender") as any) || undefined,
+      age_min: searchParams.get("age_min")
+        ? Number(searchParams.get("age_min"))
         : undefined,
-      age_max: searchParams.get('age_max')
-        ? Number(searchParams.get('age_max'))
+      age_max: searchParams.get("age_max")
+        ? Number(searchParams.get("age_max"))
         : undefined,
-      mbti: searchParams.get('mbti') || undefined,
-      search: searchParams.get('search') || undefined,
+      mbti: searchParams.get("mbti") || undefined,
+      search: searchParams.get("search") || undefined,
     };
 
     // Only update if there are URL params
@@ -43,7 +45,7 @@ export default function DatasetsPageContent() {
       setFilters(urlFilters);
     }
 
-    const page = searchParams.get('page');
+    const page = searchParams.get("page");
     if (page) {
       setCurrentPage(Number(page));
     }
@@ -53,21 +55,21 @@ export default function DatasetsPageContent() {
   useEffect(() => {
     const params = new URLSearchParams();
 
-    if (filters.dataset_type) params.set('dataset_type', filters.dataset_type);
-    if (filters.gender) params.set('gender', filters.gender);
-    if (filters.age_min) params.set('age_min', filters.age_min.toString());
-    if (filters.age_max) params.set('age_max', filters.age_max.toString());
-    if (filters.mbti) params.set('mbti', filters.mbti);
-    if (filters.search) params.set('search', filters.search);
-    if (currentPage > 1) params.set('page', currentPage.toString());
+    if (filters.dataset_type) params.set("dataset_type", filters.dataset_type);
+    if (filters.gender) params.set("gender", filters.gender);
+    if (filters.age_min) params.set("age_min", filters.age_min.toString());
+    if (filters.age_max) params.set("age_max", filters.age_max.toString());
+    if (filters.mbti) params.set("mbti", filters.mbti);
+    if (filters.search) params.set("search", filters.search);
+    if (currentPage > 1) params.set("page", currentPage.toString());
 
     const queryString = params.toString();
-    const newUrl = queryString ? `/datasets?${queryString}` : '/datasets';
+    const newUrl = queryString ? `/datasets?${queryString}` : "/datasets";
     router.replace(newUrl, { scroll: false });
   }, [filters, currentPage, router]);
 
   const { data, isLoading } = useProfiles({
-    datasetType: filters.dataset_type || 'validation',
+    datasetType: filters.dataset_type || "validation",
     page: currentPage,
     page_size: 50,
     ...filters,
@@ -75,8 +77,8 @@ export default function DatasetsPageContent() {
 
   // Get detailed profile data when a profile is selected
   const { data: selectedProfileData, isLoading: isLoadingProfile } = useProfile(
-    filters.dataset_type || 'validation',
-    selectedProfileId || ''
+    filters.dataset_type || "validation",
+    selectedProfileId || "",
   );
 
   const handleFiltersChange = (newFilters: ProfileFiltersType) => {
@@ -94,7 +96,7 @@ export default function DatasetsPageContent() {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -138,7 +140,7 @@ export default function DatasetsPageContent() {
           totalPages={data?.total_pages || 1}
           totalProfiles={data?.total}
           onPageChange={handlePageChange}
-          datasetType={filters.dataset_type || 'validation'}
+          datasetType={filters.dataset_type || "validation"}
           filters={filters}
         />
 

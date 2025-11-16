@@ -1,25 +1,31 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { useTaskLogs, useLogViewerPreferences } from '@/hooks/use-task-logs';
-import type { TaskLogEntry, LogLevel } from '@/types/api';
 import {
-  X,
+  AlertTriangle,
+  Bug,
+  CheckCircle,
   ChevronDown,
   ChevronUp,
-  Search,
-  Filter,
   Clock,
-  Zap,
-  AlertTriangle,
-  CheckCircle,
+  Filter,
   Info,
-  Bug
-} from 'lucide-react';
+  Search,
+  X,
+  Zap,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useLogViewerPreferences, useTaskLogs } from "@/hooks/use-task-logs";
+import type { LogLevel, TaskLogEntry } from "@/types/api";
 
 interface TaskLogViewerProps {
   taskId: string;
@@ -27,54 +33,55 @@ interface TaskLogViewerProps {
   onClose: () => void;
 }
 
-const LOG_LEVELS: LogLevel[] = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'SUCCESS'];
+const LOG_LEVELS: LogLevel[] = ["DEBUG", "INFO", "WARNING", "ERROR", "SUCCESS"];
 
 const LOG_LEVEL_CONFIG = {
   DEBUG: {
-    color: 'text-gray-600 dark:text-gray-400',
-    bgColor: 'bg-gray-100 dark:bg-gray-800',
-    borderColor: 'border-gray-200 dark:border-gray-700',
+    color: "text-gray-600 dark:text-gray-400",
+    bgColor: "bg-gray-100 dark:bg-gray-800",
+    borderColor: "border-gray-200 dark:border-gray-700",
     icon: Bug,
-    label: 'DEBUG'
+    label: "DEBUG",
   },
   INFO: {
-    color: 'text-blue-600 dark:text-blue-400',
-    bgColor: 'bg-blue-50 dark:bg-blue-950',
-    borderColor: 'border-blue-200 dark:border-blue-800',
+    color: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-50 dark:bg-blue-950",
+    borderColor: "border-blue-200 dark:border-blue-800",
     icon: Info,
-    label: 'INFO'
+    label: "INFO",
   },
   WARNING: {
-    color: 'text-yellow-600 dark:text-yellow-400',
-    bgColor: 'bg-yellow-50 dark:bg-yellow-950',
-    borderColor: 'border-yellow-200 dark:border-yellow-800',
+    color: "text-yellow-600 dark:text-yellow-400",
+    bgColor: "bg-yellow-50 dark:bg-yellow-950",
+    borderColor: "border-yellow-200 dark:border-yellow-800",
     icon: AlertTriangle,
-    label: 'WARN'
+    label: "WARN",
   },
   ERROR: {
-    color: 'text-red-600 dark:text-red-400',
-    bgColor: 'bg-red-50 dark:bg-red-950',
-    borderColor: 'border-red-200 dark:border-red-800',
+    color: "text-red-600 dark:text-red-400",
+    bgColor: "bg-red-50 dark:bg-red-950",
+    borderColor: "border-red-200 dark:border-red-800",
     icon: X,
-    label: 'ERROR'
+    label: "ERROR",
   },
   SUCCESS: {
-    color: 'text-green-600 dark:text-green-400',
-    bgColor: 'bg-green-50 dark:bg-green-950',
-    borderColor: 'border-green-200 dark:border-green-800',
+    color: "text-green-600 dark:text-green-400",
+    bgColor: "bg-green-50 dark:bg-green-950",
+    borderColor: "border-green-200 dark:border-green-800",
     icon: CheckCircle,
-    label: 'SUCCESS'
+    label: "SUCCESS",
   },
 };
 
 export function TaskLogViewer({ taskId, isOpen, onClose }: TaskLogViewerProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedLevel, setSelectedLevel] = useState<LogLevel | ''>('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLevel, setSelectedLevel] = useState<LogLevel | "">("");
   const [expandedLogs, setExpandedLogs] = useState<Set<string>>(new Set());
   const logsEndRef = useRef<HTMLDivElement>(null);
 
-  const { autoScroll, updatePreferences, toggleAutoScroll } = useLogViewerPreferences();
+  const { autoScroll, updatePreferences, toggleAutoScroll } =
+    useLogViewerPreferences();
 
   const { data, isLoading, error, refetch } = useTaskLogs(taskId, {
     page: currentPage,
@@ -86,12 +93,12 @@ export function TaskLogViewer({ taskId, isOpen, onClose }: TaskLogViewerProps) {
   // Auto-scroll to bottom when new logs arrive
   useEffect(() => {
     if (autoScroll && logsEndRef.current) {
-      logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      logsEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [data?.logs, autoScroll]);
 
   const toggleLogExpansion = (logId: string) => {
-    setExpandedLogs(prev => {
+    setExpandedLogs((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(logId)) {
         newSet.delete(logId);
@@ -103,16 +110,16 @@ export function TaskLogViewer({ taskId, isOpen, onClose }: TaskLogViewerProps) {
   };
 
   const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedLevel('');
+    setSearchTerm("");
+    setSelectedLevel("");
     setCurrentPage(1);
   };
 
   const formatTimestamp = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString('ko-KR', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+    return new Date(timestamp).toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
       fractionalSecondDigits: 3,
     });
   };
@@ -150,7 +157,7 @@ export function TaskLogViewer({ taskId, isOpen, onClose }: TaskLogViewerProps) {
               variant="ghost"
               size="sm"
               onClick={toggleAutoScroll}
-              className={autoScroll ? 'text-primary' : 'text-muted-foreground'}
+              className={autoScroll ? "text-primary" : "text-muted-foreground"}
             >
               <Clock className="h-4 w-4 mr-1" />
               Auto-scroll
@@ -180,16 +187,19 @@ export function TaskLogViewer({ taskId, isOpen, onClose }: TaskLogViewerProps) {
             </div>
 
             <div className="w-32">
-              <Select value={selectedLevel} onValueChange={(value) => {
-                setSelectedLevel(value as LogLevel | '');
-                setCurrentPage(1);
-              }}>
+              <Select
+                value={selectedLevel}
+                onValueChange={(value) => {
+                  setSelectedLevel(value as LogLevel | "");
+                  setCurrentPage(1);
+                }}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="All levels" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">All levels</SelectItem>
-                  {LOG_LEVELS.map(level => (
+                  {LOG_LEVELS.map((level) => (
                     <SelectItem key={level} value={level}>
                       <div className="flex items-center gap-2">
                         {getLogIcon(level)}
@@ -217,7 +227,7 @@ export function TaskLogViewer({ taskId, isOpen, onClose }: TaskLogViewerProps) {
               onClick={() => refetch()}
               disabled={isLoading}
             >
-              {isLoading ? 'Refreshing...' : 'Refresh'}
+              {isLoading ? "Refreshing..." : "Refresh"}
             </Button>
           </div>
         </div>
@@ -228,7 +238,9 @@ export function TaskLogViewer({ taskId, isOpen, onClose }: TaskLogViewerProps) {
             <div className="flex h-full items-center justify-center">
               <div className="text-center">
                 <div className="text-red-600 mb-2">Failed to load logs</div>
-                <div className="text-sm text-muted-foreground">{error.message}</div>
+                <div className="text-sm text-muted-foreground">
+                  {error.message}
+                </div>
                 <Button onClick={() => refetch()} className="mt-4">
                   Retry
                 </Button>
@@ -317,13 +329,12 @@ export function TaskLogViewer({ taskId, isOpen, onClose }: TaskLogViewerProps) {
                           </div>
 
                           <div className="flex-shrink-0">
-                            {log.details && (
-                              expandedLogs.has(log.id) ? (
+                            {log.details &&
+                              (expandedLogs.has(log.id) ? (
                                 <ChevronUp className="h-4 w-4 text-muted-foreground" />
                               ) : (
                                 <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                              )
-                            )}
+                              ))}
                           </div>
                         </div>
                       </div>
@@ -358,7 +369,9 @@ export function TaskLogViewer({ taskId, isOpen, onClose }: TaskLogViewerProps) {
                   variant="outline"
                   size="sm"
                   disabled={currentPage <= 1}
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(1, prev - 1))
+                  }
                 >
                   Previous
                 </Button>
@@ -371,7 +384,11 @@ export function TaskLogViewer({ taskId, isOpen, onClose }: TaskLogViewerProps) {
                   variant="outline"
                   size="sm"
                   disabled={currentPage >= data.total_pages}
-                  onClick={() => setCurrentPage(prev => Math.min(data.total_pages, prev + 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) =>
+                      Math.min(data.total_pages, prev + 1),
+                    )
+                  }
                 >
                   Next
                 </Button>

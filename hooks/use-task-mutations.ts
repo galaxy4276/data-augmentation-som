@@ -1,13 +1,13 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { taskApi } from '@/lib/api';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type {
   ExtractValidationResponse,
-  GenerateAugmentationResponse,
   GenerateAugmentationRequest,
+  GenerateAugmentationResponse,
   GenerateImagesRequest,
   GeneratePreferencesRequest,
-} from '@/lib/api';
-import { useTaskStore } from '@/store/task-store';
+} from "@/lib/api";
+import { taskApi } from "@/lib/api";
+import { useTaskStore } from "@/store/task-store";
 
 /**
  * Hook to trigger validation dataset extraction
@@ -20,16 +20,20 @@ export function useExtractValidation() {
     mutationFn: taskApi.extractValidation,
     onSuccess: (data) => {
       // Add task to store for tracking
-      addTask(data.task_id, {
-        task_id: data.task_id,
-        status: 'pending',
-        progress: 0,
-        current_step: 'Starting extraction',
-        total_steps: 1,
-      }, 'extraction');
+      addTask(
+        data.task_id,
+        {
+          task_id: data.task_id,
+          status: "pending",
+          progress: 0,
+          current_step: "Starting extraction",
+          total_steps: 1,
+        },
+        "extraction",
+      );
 
       // Invalidate datasets query to refresh stats
-      queryClient.invalidateQueries({ queryKey: ['datasets'] });
+      queryClient.invalidateQueries({ queryKey: ["datasets"] });
     },
   });
 }
@@ -49,16 +53,20 @@ export function useGenerateAugmentation() {
     mutationFn: taskApi.generateAugmentation,
     onSuccess: (data) => {
       // Add task to store for tracking
-      addTask(data.task_id, {
-        task_id: data.task_id,
-        status: 'pending',
-        progress: 0,
-        current_step: 'Starting augmentation',
-        total_steps: data.target_count,
-      }, 'augmentation');
+      addTask(
+        data.task_id,
+        {
+          task_id: data.task_id,
+          status: "pending",
+          progress: 0,
+          current_step: "Starting augmentation",
+          total_steps: data.target_count,
+        },
+        "augmentation",
+      );
 
       // Invalidate datasets query to refresh stats
-      queryClient.invalidateQueries({ queryKey: ['datasets'] });
+      queryClient.invalidateQueries({ queryKey: ["datasets"] });
     },
   });
 }

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import type { DatasetInfo } from '@/types/api';
+import type { DatasetInfo } from "@/types/api";
 
 interface DatasetStatsCardProps {
-  datasetType: 'validation' | 'learning' | 'test';
+  datasetType: "validation" | "learning" | "test";
   stats: DatasetInfo | null;
   isLoading?: boolean;
 }
@@ -14,16 +14,23 @@ export function DatasetStatsCard({
   isLoading,
 }: DatasetStatsCardProps) {
   const title =
-    datasetType === 'validation' ? 'Validation Dataset' :
-    datasetType === 'test' ? 'Test Set' : 'Learning Dataset';
+    datasetType === "validation"
+      ? "Validation Dataset"
+      : datasetType === "test"
+        ? "Test Set"
+        : "Learning Dataset";
   const description =
-    datasetType === 'validation'
-      ? 'Real user data consisting of mutual like pairs from production database'
-      : datasetType === 'test'
-      ? 'Real user data for testing and validation purposes'
-      : 'Synthetically generated data created through AI augmentation';
-  const targetCount = datasetType === 'validation' ? 282 :
-                      datasetType === 'test' ? 282 : '3,000-15,000';
+    datasetType === "validation"
+      ? "Real user data consisting of mutual like pairs from production database"
+      : datasetType === "test"
+        ? "Real user data for testing and validation purposes"
+        : "Synthetically generated data created through AI augmentation";
+  const targetCount =
+    datasetType === "validation"
+      ? 282
+      : datasetType === "test"
+        ? 282
+        : "3,000-15,000";
 
   if (isLoading) {
     return (
@@ -48,12 +55,17 @@ export function DatasetStatsCard({
   const maleCount = genderDist.MALE || 0;
   const femaleCount = genderDist.FEMALE || 0;
   const totalGender = maleCount + femaleCount;
-  const malePercent = totalGender > 0 ? ((maleCount / totalGender) * 100).toFixed(1) : 0;
-  const femalePercent = totalGender > 0 ? ((femaleCount / totalGender) * 100).toFixed(1) : 0;
+  const malePercent =
+    totalGender > 0 ? ((maleCount / totalGender) * 100).toFixed(1) : 0;
+  const femalePercent =
+    totalGender > 0 ? ((femaleCount / totalGender) * 100).toFixed(1) : 0;
 
   // Get age range - handle string age ranges like "20-24"
   const ageRanges = Object.keys(ageDist);
-  const ageRange = ageRanges.length > 0 ? `${Math.min(...ageRanges.map(range => parseInt(range.split('-')[0]) || 0))}-${Math.max(...ageRanges.map(range => parseInt(range.split('-')[1]) || 0))}` : 'N/A';
+  const ageRange =
+    ageRanges.length > 0
+      ? `${Math.min(...ageRanges.map((range) => parseInt(range.split("-")[0], 10) || 0))}-${Math.max(...ageRanges.map((range) => parseInt(range.split("-")[1], 10) || 0))}`
+      : "N/A";
 
   return (
     <div className="p-6 border rounded-lg bg-card hover:shadow-md transition-shadow">
@@ -71,7 +83,9 @@ export function DatasetStatsCard({
       <div className="space-y-3">
         <div className="flex items-center justify-between py-2 border-t">
           <span className="text-sm font-medium">Total Profiles</span>
-          <span className="text-2xl font-bold text-primary">{totalProfiles}</span>
+          <span className="text-2xl font-bold text-primary">
+            {totalProfiles}
+          </span>
         </div>
 
         <div className="flex items-center justify-between py-2 border-t">
@@ -85,7 +99,9 @@ export function DatasetStatsCard({
             <div className="flex-1">
               <div className="flex items-center justify-between text-xs mb-1">
                 <span className="text-muted-foreground">Male</span>
-                <span className="font-medium">{maleCount} ({malePercent}%)</span>
+                <span className="font-medium">
+                  {maleCount} ({malePercent}%)
+                </span>
               </div>
               <div className="h-2 bg-muted rounded-full overflow-hidden">
                 <div
@@ -97,7 +113,9 @@ export function DatasetStatsCard({
             <div className="flex-1">
               <div className="flex items-center justify-between text-xs mb-1">
                 <span className="text-muted-foreground">Female</span>
-                <span className="font-medium">{femaleCount} ({femalePercent}%)</span>
+                <span className="font-medium">
+                  {femaleCount} ({femalePercent}%)
+                </span>
               </div>
               <div className="h-2 bg-muted rounded-full overflow-hidden">
                 <div

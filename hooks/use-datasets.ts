@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { datasetApi } from '@/lib/api';
-import type { DatasetInfo, DatasetStats, DatasetType } from '@/types/api';
+import { useQuery } from "@tanstack/react-query";
+import { datasetApi } from "@/lib/api";
+import type { DatasetInfo, DatasetStats, DatasetType } from "@/types/api";
 
 /**
  * Hook to fetch all datasets with statistics
@@ -8,7 +8,7 @@ import type { DatasetInfo, DatasetStats, DatasetType } from '@/types/api';
  */
 export function useDatasets() {
   return useQuery<DatasetInfo[], Error>({
-    queryKey: ['datasets'],
+    queryKey: ["datasets"],
     queryFn: datasetApi.getDatasets,
     refetchInterval: 5000, // 5 seconds
     staleTime: 4000, // Consider data stale after 4 seconds
@@ -20,7 +20,7 @@ export function useDatasets() {
  */
 export function useDataset(datasetType: DatasetType) {
   return useQuery<DatasetInfo, Error>({
-    queryKey: ['dataset', datasetType],
+    queryKey: ["dataset", datasetType],
     queryFn: () => datasetApi.getDataset(datasetType),
     refetchInterval: 5000, // 5 seconds
     staleTime: 4000,

@@ -1,6 +1,6 @@
-import { useMutation } from '@tanstack/react-query';
-import { datasetApi } from '@/lib/api';
-import type { DatasetType, ProfileFilters } from '@/types/api';
+import { useMutation } from "@tanstack/react-query";
+import { datasetApi } from "@/lib/api";
+import type { DatasetType, ProfileFilters } from "@/types/api";
 
 interface ExportDatasetParams {
   datasetType: DatasetType;
@@ -23,11 +23,14 @@ export function useExportDataset() {
     onSuccess: (blob, variables) => {
       // Create download link
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
 
       // Generate filename with timestamp
-      const timestamp = new Date().toISOString().split('T')[0].replace(/-/g, '');
+      const timestamp = new Date()
+        .toISOString()
+        .split("T")[0]
+        .replace(/-/g, "");
       const filename = `${variables.datasetType}_export_${timestamp}.csv`;
       link.download = filename;
 
@@ -52,11 +55,15 @@ export function useExportDatasetWithFilename() {
     ExportDatasetParams
   >({
     mutationFn: async ({ datasetType, filters, useCustomExport }) => {
-      const blob = useCustomExport && filters
-        ? await datasetApi.exportCustom(datasetType, filters)
-        : await datasetApi.exportDataset(datasetType, filters);
+      const blob =
+        useCustomExport && filters
+          ? await datasetApi.exportCustom(datasetType, filters)
+          : await datasetApi.exportDataset(datasetType, filters);
 
-      const timestamp = new Date().toISOString().split('T')[0].replace(/-/g, '');
+      const timestamp = new Date()
+        .toISOString()
+        .split("T")[0]
+        .replace(/-/g, "");
       const filename = `${datasetType}_export_${timestamp}.csv`;
 
       return { blob, filename };

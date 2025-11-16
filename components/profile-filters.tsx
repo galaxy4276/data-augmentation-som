@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Search, X } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Search, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import type { ProfileFilters, DatasetType, Gender } from '@/types/api';
+} from "@/components/ui/select";
+import type { DatasetType, Gender, ProfileFilters } from "@/types/api";
 
 interface ProfileFiltersProps {
   filters: ProfileFilters;
@@ -35,8 +35,11 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-export function ProfileFilters({ filters, onFiltersChange }: ProfileFiltersProps) {
-  const [searchInput, setSearchInput] = useState(filters.search || '');
+export function ProfileFilters({
+  filters,
+  onFiltersChange,
+}: ProfileFiltersProps) {
+  const [searchInput, setSearchInput] = useState(filters.search || "");
   const debouncedSearch = useDebounce(searchInput, 300);
 
   // Update filters when debounced search changes
@@ -49,14 +52,14 @@ export function ProfileFilters({ filters, onFiltersChange }: ProfileFiltersProps
   const handleDatasetTypeChange = (value: string) => {
     onFiltersChange({
       ...filters,
-      dataset_type: value === 'all' ? undefined : (value as DatasetType),
+      dataset_type: value === "all" ? undefined : (value as DatasetType),
     });
   };
 
   const handleGenderChange = (value: string) => {
     onFiltersChange({
       ...filters,
-      gender: value === 'all' ? undefined : (value as Gender),
+      gender: value === "all" ? undefined : (value as Gender),
     });
   };
 
@@ -73,12 +76,12 @@ export function ProfileFilters({ filters, onFiltersChange }: ProfileFiltersProps
   const handleMbtiChange = (value: string) => {
     onFiltersChange({
       ...filters,
-      mbti: value === 'all' ? undefined : value,
+      mbti: value === "all" ? undefined : value,
     });
   };
 
   const handleClearFilters = () => {
-    setSearchInput('');
+    setSearchInput("");
     onFiltersChange({
       dataset_type: undefined,
       gender: undefined,
@@ -135,11 +138,14 @@ export function ProfileFilters({ filters, onFiltersChange }: ProfileFiltersProps
 
         {/* Dataset Type */}
         <div>
-          <label htmlFor="dataset-type" className="block text-sm font-medium mb-2">
+          <label
+            htmlFor="dataset-type"
+            className="block text-sm font-medium mb-2"
+          >
             Dataset Type
           </label>
           <Select
-            value={filters.dataset_type || 'all'}
+            value={filters.dataset_type || "all"}
             onValueChange={handleDatasetTypeChange}
           >
             <SelectTrigger id="dataset-type">
@@ -159,7 +165,7 @@ export function ProfileFilters({ filters, onFiltersChange }: ProfileFiltersProps
             Gender
           </label>
           <Select
-            value={filters.gender || 'all'}
+            value={filters.gender || "all"}
             onValueChange={handleGenderChange}
           >
             <SelectTrigger id="gender">
@@ -178,7 +184,10 @@ export function ProfileFilters({ filters, onFiltersChange }: ProfileFiltersProps
           <label htmlFor="mbti" className="block text-sm font-medium mb-2">
             MBTI
           </label>
-          <Select value={filters.mbti || 'all'} onValueChange={handleMbtiChange}>
+          <Select
+            value={filters.mbti || "all"}
+            onValueChange={handleMbtiChange}
+          >
             <SelectTrigger id="mbti">
               <SelectValue placeholder="All MBTI types" />
             </SelectTrigger>
@@ -215,7 +224,7 @@ export function ProfileFilters({ filters, onFiltersChange }: ProfileFiltersProps
             min="18"
             max="99"
             placeholder="Min"
-            value={filters.age_min || ''}
+            value={filters.age_min || ""}
             onChange={(e) => handleAgeMinChange(e.target.value)}
           />
         </div>
@@ -230,7 +239,7 @@ export function ProfileFilters({ filters, onFiltersChange }: ProfileFiltersProps
             min="18"
             max="99"
             placeholder="Max"
-            value={filters.age_max || ''}
+            value={filters.age_max || ""}
             onChange={(e) => handleAgeMaxChange(e.target.value)}
           />
         </div>

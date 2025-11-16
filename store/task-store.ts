@@ -1,10 +1,10 @@
-import { create } from 'zustand';
-import type { TaskStatusResponse, TaskLogEntry, LogLevel } from '@/types/api';
+import { create } from "zustand";
+import type { LogLevel, TaskLogEntry, TaskStatusResponse } from "@/types/api";
 
 interface TaskStore {
   // Active tasks tracking
   activeTasks: Map<string, TaskStatusResponse>;
-  taskTypes: Map<string, 'extraction' | 'augmentation'>;
+  taskTypes: Map<string, "extraction" | "augmentation">;
 
   // Cached arrays for selectors (to prevent infinite loops)
   runningTasks: TaskStatusResponse[];
@@ -12,11 +12,15 @@ interface TaskStore {
   failedTasks: TaskStatusResponse[];
 
   // Task actions
-  addTask: (taskId: string, status: TaskStatusResponse, type?: 'extraction' | 'augmentation') => void;
+  addTask: (
+    taskId: string,
+    status: TaskStatusResponse,
+    type?: "extraction" | "augmentation",
+  ) => void;
   updateTask: (taskId: string, status: TaskStatusResponse) => void;
   removeTask: (taskId: string) => void;
   getTask: (taskId: string) => TaskStatusResponse | undefined;
-  getTaskType: (taskId: string) => 'extraction' | 'augmentation' | undefined;
+  getTaskType: (taskId: string) => "extraction" | "augmentation" | undefined;
 
   // Task queries
   hasActiveTasks: () => boolean;
@@ -31,7 +35,7 @@ interface TaskStore {
     datasetType: string;
     filters?: Record<string, unknown>;
     filename: string;
-    status: 'success' | 'error';
+    status: "success" | "error";
     error?: string;
   }>;
   addExportHistory: (entry: {
@@ -39,7 +43,7 @@ interface TaskStore {
     datasetType: string;
     filters?: Record<string, unknown>;
     filename: string;
-    status: 'success' | 'error';
+    status: "success" | "error";
     error?: string;
   }) => void;
 
@@ -55,11 +59,13 @@ interface TaskStore {
     pageSize: number;
     selectedLevels: LogLevel[];
   };
-  setLogViewerPreferences: (preferences: Partial<{
-    autoScroll: boolean;
-    pageSize: number;
-    selectedLevels: LogLevel[];
-  }>) => void;
+  setLogViewerPreferences: (
+    preferences: Partial<{
+      autoScroll: boolean;
+      pageSize: number;
+      selectedLevels: LogLevel[];
+    }>,
+  ) => void;
 
   // Internal helper to update cached arrays
   _updateCachedArrays: () => void;
@@ -85,10 +91,10 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     const tasks = Array.from(get().activeTasks.values());
     set({
       runningTasks: tasks.filter(
-        (task) => task.status === 'pending' || task.status === 'running'
+        (task) => task.status === "pending" || task.status === "running",
       ),
-      completedTasks: tasks.filter((task) => task.status === 'completed'),
-      failedTasks: tasks.filter((task) => task.status === 'failed'),
+      completedTasks: tasks.filter((task) => task.status === "completed"),
+      failedTasks: tasks.filter((task) => task.status === "failed"),
     });
   },
 
@@ -152,7 +158,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     set((state) => {
       const newTasks = new Map(state.activeTasks);
       for (const [taskId, task] of newTasks.entries()) {
-        if (task.status === 'completed') {
+        if (task.status === "completed") {
           newTasks.delete(taskId);
         }
       }
@@ -174,10 +180,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   // Export history
   addExportHistory: (entry) => {
     set((state) => ({
-      exportHistory: [
-        entry,
-        ...state.exportHistory,
-      ].slice(0, 50), // Keep last 50 exports
+      exportHistory: [entry, ...state.exportHistory].slice(0, 50), // Keep last 50 exports
     }));
   },
 
@@ -188,8 +191,8 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       const existingLogs = newTaskLogs.get(taskId) || [];
 
       // Merge logs, avoiding duplicates
-      const existingLogIds = new Set(existingLogs.map(log => log.id));
-      const newUniqueLogs = logs.filter(log => !existingLogIds.has(log.id));
+      const existingLogIds = new Set(existingLogs.map((log) => log.id));
+      const newUniqueLogs = logs.filter((log) => !existingLogIds.has(log.id));
       const mergedLogs = [...existingLogs, ...newUniqueLogs];
 
       newTaskLogs.set(taskId, mergedLogs);

@@ -1,5 +1,9 @@
-import apiClient from '@/lib/api-client';
-import type { TaskStatusResponse, TaskLogsResponse, LogLevel } from '@/types/api';
+import apiClient from "@/lib/api-client";
+import type {
+  LogLevel,
+  TaskLogsResponse,
+  TaskStatusResponse,
+} from "@/types/api";
 
 export interface ExtractValidationResponse {
   task_id: string;
@@ -20,7 +24,7 @@ export interface GenerateAugmentationRequest {
 export interface GenerateImagesRequest {
   profile_data: {
     age: number;
-    gender: 'MALE' | 'FEMALE';
+    gender: "MALE" | "FEMALE";
     mbti: string;
   };
   num_images?: number;
@@ -29,7 +33,7 @@ export interface GenerateImagesRequest {
 export interface GeneratePreferencesRequest {
   profile_context: {
     age: number;
-    gender: 'MALE' | 'FEMALE';
+    gender: "MALE" | "FEMALE";
     mbti: string;
   };
 }
@@ -40,7 +44,7 @@ export const taskApi = {
    */
   extractValidation: async (): Promise<ExtractValidationResponse> => {
     const response = await apiClient.post<ExtractValidationResponse>(
-      '/api/extract/validation'
+      "/api/extract/validation",
     );
     return response.data;
   },
@@ -50,17 +54,18 @@ export const taskApi = {
    */
   getTaskLogs: async (
     taskId: string,
-    taskType?: 'extraction' | 'augmentation',
+    taskType?: "extraction" | "augmentation",
     params?: {
       page?: number;
       page_size?: number;
       level?: LogLevel;
       search?: string;
-    }
+    },
   ): Promise<TaskLogsResponse> => {
-    const endpoint = taskType === 'extraction'
-      ? `/api/extract/validation/${taskId}/logs`
-      : `/api/generate/augmentation/${taskId}/logs`;
+    const endpoint =
+      taskType === "extraction"
+        ? `/api/extract/validation/${taskId}/logs`
+        : `/api/generate/augmentation/${taskId}/logs`;
 
     const response = await apiClient.get<TaskLogsResponse>(endpoint, {
       params: {
@@ -77,11 +82,11 @@ export const taskApi = {
    * Trigger learning dataset generation
    */
   generateAugmentation: async (
-    request: GenerateAugmentationRequest
+    request: GenerateAugmentationRequest,
   ): Promise<GenerateAugmentationResponse> => {
     const response = await apiClient.post<GenerateAugmentationResponse>(
-      '/api/generate/augmentation',
-      request
+      "/api/generate/augmentation",
+      request,
     );
     return response.data;
   },
@@ -89,11 +94,15 @@ export const taskApi = {
   /**
    * Get task status and progress
    */
-  getTaskStatus: async (taskId: string, taskType?: 'extraction' | 'augmentation'): Promise<TaskStatusResponse> => {
+  getTaskStatus: async (
+    taskId: string,
+    taskType?: "extraction" | "augmentation",
+  ): Promise<TaskStatusResponse> => {
     // Default to augmentation endpoint for backward compatibility
-    const endpoint = taskType === 'extraction'
-      ? `/api/extract/validation/${taskId}/status`
-      : `/api/generate/images/${taskId}/status`;
+    const endpoint =
+      taskType === "extraction"
+        ? `/api/extract/validation/${taskId}/status`
+        : `/api/generate/images/${taskId}/status`;
 
     const response = await apiClient.get<TaskStatusResponse>(endpoint);
     return response.data;
@@ -103,11 +112,11 @@ export const taskApi = {
    * Generate images for a specific profile
    */
   generateImages: async (
-    request: GenerateImagesRequest
+    request: GenerateImagesRequest,
   ): Promise<{ task_id: string }> => {
     const response = await apiClient.post<{ task_id: string }>(
-      '/api/augment/images',
-      request
+      "/api/augment/images",
+      request,
     );
     return response.data;
   },
@@ -116,11 +125,11 @@ export const taskApi = {
    * Generate preferences for a specific profile
    */
   generatePreferences: async (
-    request: GeneratePreferencesRequest
+    request: GeneratePreferencesRequest,
   ): Promise<{ preferences: any }> => {
     const response = await apiClient.post<{ preferences: any }>(
-      '/api/augment/preferences',
-      request
+      "/api/augment/preferences",
+      request,
     );
     return response.data;
   },

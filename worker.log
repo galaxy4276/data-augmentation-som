@@ -1,0 +1,5 @@
+INFO:     Will watch for changes in these directories: ['/Volumes/eungu/projects/solo-nestjs-api/ml-frontend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [2497] using WatchFiles
+ERROR:    Error loading ASGI app. Could not import module "app.main".
+INFO:     Stopping reloader process [2497]

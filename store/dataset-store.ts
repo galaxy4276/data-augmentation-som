@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import type { ProfileFilters, DatasetType } from '@/types/api';
+import { create } from "zustand";
+import type { DatasetType, ProfileFilters } from "@/types/api";
 
 interface DatasetStore {
   // Filter state
@@ -7,7 +7,7 @@ interface DatasetStore {
   setFilters: (filters: ProfileFilters) => void;
   updateFilter: <K extends keyof ProfileFilters>(
     key: K,
-    value: ProfileFilters[K]
+    value: ProfileFilters[K],
   ) => void;
   clearFilters: () => void;
 

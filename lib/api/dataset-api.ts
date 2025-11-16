@@ -1,20 +1,20 @@
-import apiClient from '@/lib/api-client';
+import apiClient from "@/lib/api-client";
 import type {
   DatasetInfo,
   DatasetType,
-  ProfileData,
-  ProfileSummary,
-  ProfileFilters,
   PaginationParams,
+  ProfileData,
+  ProfileFilters,
   ProfileListResponse,
-} from '@/types/api';
+  ProfileSummary,
+} from "@/types/api";
 
 export const datasetApi = {
   /**
    * Get all datasets with statistics
    */
   getDatasets: async (): Promise<DatasetInfo[]> => {
-    const response = await apiClient.get<DatasetInfo[]>('/api/datasets');
+    const response = await apiClient.get<DatasetInfo[]>("/api/datasets");
     return response.data;
   },
 
@@ -23,7 +23,7 @@ export const datasetApi = {
    */
   getDataset: async (datasetType: DatasetType): Promise<DatasetInfo> => {
     const response = await apiClient.get<DatasetInfo>(
-      `/api/datasets/${datasetType}`
+      `/api/datasets/${datasetType}`,
     );
     return response.data;
   },
@@ -33,7 +33,7 @@ export const datasetApi = {
    */
   getProfiles: async (
     datasetType: DatasetType,
-    params: Partial<ProfileFilters & PaginationParams>
+    params: Partial<ProfileFilters & PaginationParams>,
   ): Promise<ProfileListResponse> => {
     const response = await apiClient.get<ProfileListResponse>(
       `/api/datasets/${datasetType}/profiles`,
@@ -47,7 +47,7 @@ export const datasetApi = {
           mbti: params.mbti,
           search: params.search,
         },
-      }
+      },
     );
     return response.data;
   },
@@ -57,10 +57,10 @@ export const datasetApi = {
    */
   getProfile: async (
     datasetType: DatasetType,
-    profileId: string
+    profileId: string,
   ): Promise<ProfileData> => {
     const response = await apiClient.get<ProfileData>(
-      `/api/datasets/${datasetType}/profiles/${profileId}`
+      `/api/datasets/${datasetType}/profiles/${profileId}`,
     );
     return response.data;
   },
@@ -70,11 +70,11 @@ export const datasetApi = {
    */
   exportDataset: async (
     datasetType: DatasetType,
-    filters?: Partial<ProfileFilters>
+    filters?: Partial<ProfileFilters>,
   ): Promise<Blob> => {
     const response = await apiClient.get(`/api/export/${datasetType}`, {
       params: filters,
-      responseType: 'blob',
+      responseType: "blob",
     });
     return response.data;
   },
@@ -84,17 +84,17 @@ export const datasetApi = {
    */
   exportCustom: async (
     datasetType: DatasetType,
-    filters: Partial<ProfileFilters>
+    filters: Partial<ProfileFilters>,
   ): Promise<Blob> => {
     const response = await apiClient.post(
-      '/api/export/custom',
+      "/api/export/custom",
       {
         dataset_type: datasetType,
         filters,
       },
       {
-        responseType: 'blob',
-      }
+        responseType: "blob",
+      },
     );
     return response.data;
   },

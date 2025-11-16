@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { TaskLogViewer } from '@/components/task-log-viewer';
-import { Button } from '@/components/ui/button';
-import { FileText, Play } from 'lucide-react';
+import { FileText, Play } from "lucide-react";
+import { useState } from "react";
+import { TaskLogViewer } from "@/components/task-log-viewer";
+import { Button } from "@/components/ui/button";
 
 export default function LogsDemoPage() {
   const [showLogs, setShowLogs] = useState(false);
-  const [taskId] = useState('demo-task-12345');
+  const [taskId] = useState("demo-task-12345");
 
   const handleStartDemo = () => {
     // Demo: 실제 태스크를 시작하지 않고 로그 뷰어만 보여주기
@@ -29,8 +29,8 @@ export default function LogsDemoPage() {
           <div className="p-6 border rounded-lg bg-card">
             <h3 className="text-lg font-semibold mb-4">로그 뷰어 체험하기</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              아래 버튼을 클릭하여 로그 뷰어를 열어보세요.
-              실제 태스크를 실행하지 않고 로그 뷰어의 UI 기능만 체험할 수 있습니다.
+              아래 버튼을 클릭하여 로그 뷰어를 열어보세요. 실제 태스크를
+              실행하지 않고 로그 뷰어의 UI 기능만 체험할 수 있습니다.
             </p>
             <Button
               onClick={handleStartDemo}
@@ -61,11 +61,26 @@ export default function LogsDemoPage() {
             <div className="p-6 border rounded-lg bg-card">
               <h3 className="text-lg font-semibold mb-3">로그 레벨</h3>
               <ul className="space-y-2 text-sm">
-                <li><span className="inline-block w-3 h-3 bg-gray-500 rounded mr-2"></span>DEBUG - 디버깅 정보</li>
-                <li><span className="inline-block w-3 h-3 bg-blue-500 rounded mr-2"></span>INFO - 일반 정보</li>
-                <li><span className="inline-block w-3 h-3 bg-yellow-500 rounded mr-2"></span>WARNING - 경고</li>
-                <li><span className="inline-block w-3 h-3 bg-red-500 rounded mr-2"></span>ERROR - 에러</li>
-                <li><span className="inline-block w-3 h-3 bg-green-500 rounded mr-2"></span>SUCCESS - 성공</li>
+                <li>
+                  <span className="inline-block w-3 h-3 bg-gray-500 rounded mr-2"></span>
+                  DEBUG - 디버깅 정보
+                </li>
+                <li>
+                  <span className="inline-block w-3 h-3 bg-blue-500 rounded mr-2"></span>
+                  INFO - 일반 정보
+                </li>
+                <li>
+                  <span className="inline-block w-3 h-3 bg-yellow-500 rounded mr-2"></span>
+                  WARNING - 경고
+                </li>
+                <li>
+                  <span className="inline-block w-3 h-3 bg-red-500 rounded mr-2"></span>
+                  ERROR - 에러
+                </li>
+                <li>
+                  <span className="inline-block w-3 h-3 bg-green-500 rounded mr-2"></span>
+                  SUCCESS - 성공
+                </li>
               </ul>
             </div>
           </div>

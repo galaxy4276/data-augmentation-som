@@ -1,8 +1,8 @@
-export type DatasetType = 'validation' | 'learning';
+export type DatasetType = "validation" | "learning";
 
-export type Gender = 'MALE' | 'FEMALE';
+export type Gender = "MALE" | "FEMALE";
 
-export type TaskStatus = 'pending' | 'running' | 'completed' | 'failed';
+export type TaskStatus = "pending" | "running" | "completed" | "failed";
 
 export interface UniversityInfo {
   university_name: string;
@@ -141,7 +141,7 @@ export interface ProfilePage {
   total_pages: number;
 }
 
-export type LogLevel = 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
+export type LogLevel = "DEBUG" | "INFO" | "WARNING" | "ERROR" | "SUCCESS";
 
 export interface TaskLogEntry {
   id: string;

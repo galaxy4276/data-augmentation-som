@@ -1,5 +1,5 @@
-import { Suspense } from 'react';
-import DatasetsPageContent from './datasets-page-content';
+import { Suspense } from "react";
+import DatasetsPageContent from "./datasets-page-content";
 
 export default function DatasetsPage() {
   return (
