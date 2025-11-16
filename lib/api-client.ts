@@ -1,12 +1,18 @@
 import axios from "axios";
 
+// Detect if we're in production (Vercel) or development
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
+const baseURL = isProduction ? "/api" : (process.env.NEXT_PUBLIC_API_URL || "/api");
+
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "/api",
+  baseURL,
   headers: {
     "Content-Type": "application/json",
   },
   timeout: 30000, // 30 seconds
 });
+
+console.log(`API Client initialized with baseURL: ${baseURL} (isProduction: ${isProduction})`);
 
 // Request interceptor for logging
 apiClient.interceptors.request.use(
