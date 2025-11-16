@@ -18,6 +18,33 @@ export default async function handler(req, res) {
     return;
   }
 
+  // Temporarily return fallback data to test function stability
+  console.log('Returning test fallback data - fetch temporarily disabled');
+
+  const fallbackData = [
+    {
+      id: "1",
+      name: "Test Dataset",
+      type: "validation",
+      count: 100,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    },
+    {
+      id: "2",
+      name: "Training Dataset",
+      type: "training",
+      count: 200,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+  ];
+
+  console.log('Returning fallback data:', fallbackData);
+  res.status(200).json(fallbackData);
+
+  /*
+  // Original fetch code (temporarily commented out)
   try {
     console.log(`Attempting to fetch: ${BACKEND_URL}/api/datasets`);
 
