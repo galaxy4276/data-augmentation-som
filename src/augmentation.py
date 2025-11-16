@@ -82,20 +82,21 @@ class DataAugmenter:
         rows, cols, dim = weights.shape
         
         synthetic = []
-        for _ in range(n_samples):
-            # Randomly select two neighboring neurons
-            row = np.random.randint(0, rows - 1)
-            col = np.random.randint(0, cols - 1)
+        while len(synthetic) < n_samples:
+            # Randomly select a neuron
+            row = np.random.randint(0, rows)
+            col = np.random.randint(0, cols)
             
             # Choose a random neighbor
-            neighbors = [(0, 1), (1, 0), (1, 1)]
+            neighbors = [(0, 1), (1, 0), (1, 1), (-1, 0), (0, -1)]
             dr, dc = neighbors[np.random.randint(len(neighbors))]
             
-            if row + dr < rows and col + dc < cols:
+            new_row, new_col = row + dr, col + dc
+            if 0 <= new_row < rows and 0 <= new_col < cols:
                 # Interpolate between the two neurons
                 alpha = np.random.random()
                 neuron1 = weights[row, col]
-                neuron2 = weights[row + dr, col + dc]
+                neuron2 = weights[new_row, new_col]
                 sample = alpha * neuron1 + (1 - alpha) * neuron2
                 synthetic.append(sample)
         

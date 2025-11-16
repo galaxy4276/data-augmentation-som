@@ -97,6 +97,9 @@ class SelfOrganizingMap:
             epochs: Number of training epochs
             verbose: Whether to print training progress
         """
+        if epochs <= 0:
+            raise ValueError("epochs must be greater than 0")
+        
         if self.weights is None:
             self._initialize_weights(X.shape[1])
         

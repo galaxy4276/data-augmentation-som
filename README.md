@@ -144,8 +144,8 @@ data-augmentation-som/
 
 - Python 3.7+
 - NumPy >= 1.21.0
-- SciPy >= 1.7.0
-- scikit-learn >= 1.0.0
+- SciPy >= 1.8.0
+- scikit-learn >= 1.0.1
 - matplotlib >= 3.4.0
 - pandas >= 1.3.0
 
