@@ -1,5 +1,6 @@
 // Vercel Serverless Function for /api/datasets/[datasetType]/profiles/[profileId]
 const BACKEND_URL = 'http://119.67.194.202:31332';
+const axios = require('axios');
 
 export default async function handler(req, res) {
   // CORS headers
@@ -28,36 +29,33 @@ export default async function handler(req, res) {
   try {
     console.log(`Attempting to fetch: ${BACKEND_URL}/api/datasets/${datasetType}/profiles/${profileId}`);
 
-    const response = await fetch(
-      `${BACKEND_URL}/api/datasets/${datasetType}/profiles/${profileId}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': 'Vercel-Serverless-Function',
-        },
-        }
-    );
+    const response = await axios.get(`${BACKEND_URL}/api/datasets/${datasetType}/profiles/${profileId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Vercel-Serverless-Function',
+      },
+      timeout: 10000,
+      });
 
     console.log(`Backend response status: ${response.status}`);
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       console.error(`Backend error: ${response.status} ${response.statusText}`);
       throw new Error(`Backend responded with ${response.status}: ${response.statusText}`);
     }
 
-    const data = await response.json();
-    console.log('Backend response data:', data);
-    res.status(200).json(data);
+    console.log('Backend response data:', response.data);
+    res.status(200).json(response.data);
   } catch (error) {
     console.error('Full error details:', {
       name: error.name,
       message: error.message,
       stack: error.stack,
-      cause: error.cause
+      code: error.code,
+      response: error.response?.status,
     });
 
-    // Fallback mock data
+    // Fallback mock profile
     const mockProfile = {
       id: profileId,
       age: 20 + Math.floor(Math.random() * 40),
@@ -81,6 +79,7 @@ export default async function handler(req, res) {
       ]
     };
 
+    console.log('Returning fallback mock profile due to error:', error.message);
     res.status(200).json(mockProfile);
   }
 }

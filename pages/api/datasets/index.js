@@ -1,5 +1,6 @@
 // Vercel Serverless Function for /api/datasets
 const BACKEND_URL = 'http://119.67.194.202:31332';
+const axios = require('axios');
 
 export default async function handler(req, res) {
   // CORS headers
@@ -18,60 +19,28 @@ export default async function handler(req, res) {
     return;
   }
 
-  // Temporarily return fallback data to test function stability
-  console.log('Returning test fallback data - fetch temporarily disabled');
-
-  const fallbackData = [
-    {
-      id: "1",
-      name: "Test Dataset",
-      type: "validation",
-      count: 100,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: "2",
-      name: "Training Dataset",
-      type: "training",
-      count: 200,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
-  ];
-
-  console.log('Returning fallback data:', fallbackData);
-  res.status(200).json(fallbackData);
-
-  /*
-  // Original fetch code (temporarily commented out)
   try {
     console.log(`Attempting to fetch: ${BACKEND_URL}/api/datasets`);
 
-    const response = await fetch(`${BACKEND_URL}/api/datasets`, {
-      method: 'GET',
+    const response = await axios.get(`${BACKEND_URL}/api/datasets`, {
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'Vercel-Serverless-Function',
       },
+      timeout: 10000, // 10 second timeout
     });
 
     console.log(`Backend response status: ${response.status}`);
+    console.log('Backend response data:', response.data);
 
-    if (!response.ok) {
-      console.error(`Backend error: ${response.status} ${response.statusText}`);
-      throw new Error(`Backend responded with ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    console.log('Backend response data:', data);
-    res.status(200).json(data);
+    res.status(200).json(response.data);
   } catch (error) {
     console.error('Full error details:', {
       name: error.name,
       message: error.message,
       stack: error.stack,
-      cause: error.cause
+      code: error.code,
+      response: error.response?.status,
     });
 
     // Fallback mock data
@@ -94,7 +63,7 @@ export default async function handler(req, res) {
       }
     ];
 
-    console.log('Returning fallback mock data');
+    console.log('Returning fallback mock data due to error:', error.message);
     res.status(200).json(mockData);
   }
 }
