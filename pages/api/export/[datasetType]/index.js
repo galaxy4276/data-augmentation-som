@@ -1,7 +1,7 @@
-// MINIMAL DEBUG VERSION - Individual dataset info
+// MINIMAL DEBUG VERSION - Export dataset
 export default async function handler(req, res) {
   try {
-    console.log('=== DEBUG: Dataset index function started ===');
+    console.log('=== DEBUG: Export function started ===');
     console.log('Method:', req.method);
     console.log('URL:', req.url);
     console.log('Query:', req.query);
@@ -32,15 +32,15 @@ export default async function handler(req, res) {
         datasetType,
         method: req.method,
         url: req.url,
-        message: 'Dataset index endpoint working'
+        message: 'Export endpoint working - would return CSV file'
       }
     };
 
-    console.log('DEBUG: Dataset index response sent');
+    console.log('DEBUG: Export response sent');
     return res.status(200).json(response);
 
   } catch (error) {
-    console.error('=== DEBUG: Dataset index CATCH BLOCK ===');
+    console.error('=== DEBUG: Export CATCH BLOCK ===');
     console.error('Error:', error);
 
     return res.status(500).json({

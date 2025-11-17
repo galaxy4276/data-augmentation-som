@@ -1,93 +1,76 @@
-// Vercel Serverless Function for /api/datasets/[datasetType]/profiles
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
-
+// MINIMAL DEBUG VERSION - Remove all complex logic to isolate 502 error
 export default async function handler(req, res) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
-  if (req.method !== 'GET') {
-    res.setHeader('Allow', 'GET');
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
-  }
-
-  const { datasetType } = req.query;
-  const { page = 1, page_size = 50, gender, age_min, age_max, mbti, search } = req.query;
-
-  if (!datasetType) {
-    res.status(400).json({ error: 'Dataset type is required' });
-    return;
-  }
-
   try {
-    const queryParams = new URLSearchParams({
-      page: page.toString(),
-      page_size: page_size.toString(),
-    });
+    // Log basic request info
+    console.log('=== DEBUG: Function started ===');
+    console.log('Method:', req.method);
+    console.log('URL:', req.url);
+    console.log('Query:', req.query);
+    console.log('Headers:', Object.keys(req.headers));
 
-    if (gender) queryParams.append('gender', gender);
-    if (age_min) queryParams.append('age_min', age_min);
-    if (age_max) queryParams.append('age_max', age_max);
-    if (mbti) queryParams.append('mbti', mbti);
-    if (search) queryParams.append('search', search);
+    // Basic CORS setup
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    console.log(`Attempting to fetch: ${BACKEND_URL}/api/datasets/${datasetType}/profiles?${queryParams}`);
-
-    const response = await fetch(`${BACKEND_URL}/api/datasets/${datasetType}/profiles?${queryParams}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': 'ML-Frontend-Vercel-Edge',
-      },
-    });
-
-    console.log(`Backend response status: ${response.status}`);
-
-    if (!response.ok) {
-      console.error(`Backend error: ${response.status} ${response.statusText}`);
-      throw new Error(`Backend responded with ${response.status}: ${response.statusText}`);
+    if (req.method === 'OPTIONS') {
+      console.log('DEBUG: Handling OPTIONS request');
+      res.status(200).end();
+      return;
     }
 
-    const data = await response.json();
-    console.log('Backend response data:', data);
-    res.status(200).json(data);
-  } catch (error) {
-    console.error('Full error details:', {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-      code: error.code,
-      response: error.response?.status,
-    });
+    if (req.method !== 'GET') {
+      console.log('DEBUG: Method not allowed:', req.method);
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
 
-    // Enhanced fallback mock data
-    const mockProfiles = Array.from({ length: parseInt(page_size) }, (_, index) => ({
-      id: `${datasetType}-${page}-${index + 1}`,
-      age: 20 + Math.floor(Math.random() * 40),
-      gender: Math.random() > 0.5 ? 'MALE' : 'FEMALE',
-      mbti: ['INTJ', 'ENFP', 'ISTP', 'ESFJ', 'INFJ', 'ENTP', 'ISFJ', 'ESTP'][Math.floor(Math.random() * 8)],
-      bio: `Sample bio for profile ${datasetType}-${page}-${index + 1}`,
-      interests: ['Technology', 'Music', 'Travel', 'Reading', 'Sports', 'Art', 'Photography', 'Cooking'].slice(0, 3 + Math.floor(Math.random() * 3)),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }));
+    console.log('DEBUG: Processing GET request');
 
-    const mockData = {
-      items: mockProfiles,
-      total: 1000,
-      page: parseInt(page),
-      page_size: parseInt(page_size),
-      total_pages: Math.ceil(1000 / parseInt(page_size))
+    // Extract parameters without any complex logic
+    const { datasetType, page, page_size } = req.query;
+
+    console.log('DEBUG: Extracted params:', { datasetType, page, page_size });
+
+    if (!datasetType) {
+      console.log('DEBUG: Missing datasetType');
+      return res.status(400).json({
+        error: 'Dataset type is required',
+        debug: { datasetType, page, page_size }
+      });
+    }
+
+    console.log('DEBUG: All validations passed');
+
+    // Return simple response - no backend calls, no mock data
+    const response = {
+      debug: {
+        timestamp: new Date().toISOString(),
+        datasetType,
+        page: page || 1,
+        page_size: page_size || 50,
+        method: req.method,
+        url: req.url,
+        node_env: process.env.NODE_ENV,
+        vercel: process.env.VERCEL
+      },
+      message: 'Edge function is working - no backend calls made'
     };
 
-    console.log('Returning enhanced fallback mock data due to error:', error.message);
-    res.status(200).json(mockData);
+    console.log('DEBUG: Sending response');
+    return res.status(200).json(response);
+
+  } catch (error) {
+    console.error('=== DEBUG: CATCH BLOCK ===');
+    console.error('Error:', error);
+    console.error('Stack:', error.stack);
+
+    return res.status(500).json({
+      error: 'Internal server error',
+      debug: {
+        message: error.message,
+        stack: error.stack,
+        timestamp: new Date().toISOString()
+      }
+    });
   }
 }
