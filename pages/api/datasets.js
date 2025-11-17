@@ -99,6 +99,55 @@ async function handleProfiles(req, res, { datasetType, page, page_size, gender, 
     });
   }
 
+  // Handle individual profile lookup
+  if (profileId) {
+    console.log(`Looking for individual profile: ${profileId}`);
+
+    try {
+      // Try backend first for individual profile
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const response = await fetch(`${BACKEND_URL}/api/profiles/${datasetType}/${profileId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        console.log(`Backend responded successfully for profile ${profileId}`);
+        const profileData = await response.json();
+        return res.status(200).json(profileData);
+      } else {
+        console.log(`Backend failed for profile ${profileId}, using mock data`);
+      }
+    } catch (error) {
+      console.log(`Backend request failed for profile ${profileId}: ${error.message}, using mock data`);
+    }
+
+    // Fallback to mock individual profile
+    const mockProfile = {
+      id: profileId,
+      age: 25 + Math.floor(Math.random() * 30),
+      gender: Math.random() > 0.5 ? 'MALE' : 'FEMALE',
+      mbti: ['INTJ', 'ENFP', 'ISTP', 'ESFJ', 'INFJ', 'ENTP'][Math.floor(Math.random() * 6)],
+      bio: `Mock profile data for ${profileId}`,
+      interests: ['Technology', 'Music', 'Travel', 'Reading', 'Sports', 'Art']
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3 + Math.floor(Math.random() * 2)),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      dataset_type: datasetType
+    };
+
+    console.log(`Returning mock individual profile for ${profileId}`);
+    return res.status(200).json(mockProfile);
+  }
+
   try {
     // Try to get data from backend server
     const controller = new AbortController();
