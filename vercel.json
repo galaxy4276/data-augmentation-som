@@ -1,0 +1,23 @@
+{
+  "framework": "nextjs",
+  "rewrites": [
+    {
+      "source": "/api/datasets",
+      "destination": "/api/datasets"
+    }
+  ],
+  "functions": {
+    "pages/api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "protection": {
+    "bypass": {
+      "routes": [
+        {
+          "src": "/api/(.*)"
+        }
+      ]
+    }
+  }
+}

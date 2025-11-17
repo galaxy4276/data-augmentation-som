@@ -116,7 +116,7 @@ async function handleProfiles(req, res, { datasetType, page, page_size, gender, 
     if (mbti) queryParams.append('mbti', mbti);
     if (search) queryParams.append('search', search);
 
-    const response = await fetch(`${BACKEND_URL}/api/profiles/${datasetType}?${queryParams}`, {
+    const response = await fetch(`${BACKEND_URL}/api/datasets/${datasetType}/profiles?${queryParams}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -207,7 +207,7 @@ async function handleExport(req, res, { datasetType }) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10초 타임아웃
 
-    const response = await fetch(`${BACKEND_URL}/api/export/${datasetType}`, {
+    const response = await fetch(`${BACKEND_URL}/api/datasets/${datasetType}/export`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
