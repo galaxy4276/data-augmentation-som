@@ -1,4 +1,4 @@
-// Vercel Serverless Function for /api/datasets/learning/profiles
+// Vercel Serverless Function for /api/datasets-test-profiles
 const BACKEND_URL = 'http://119.67.194.202:31332';
 
 export default async function handler(req, res) {
@@ -19,9 +19,9 @@ export default async function handler(req, res) {
 
   try {
     const { page = 1, page_size = 50, gender, age_min, age_max, mbti, search } = req.query;
-    const datasetType = 'learning'; // Fixed for this endpoint
+    const datasetType = 'test'; // Fixed for this endpoint
 
-    console.log(`Fetching learning profiles - page ${page}, size ${page_size}`);
+    console.log(`Fetching test profiles - page ${page}, size ${page_size}`);
 
     const params = new URLSearchParams();
     params.append('page', page.toString());
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/datasets/learning/profiles?${params.toString()}`, {
+      const response = await fetch(`${BACKEND_URL}/api/datasets/test/profiles?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -56,39 +56,40 @@ export default async function handler(req, res) {
       }
     } catch (fetchError) {
       clearTimeout(timeoutId);
-      console.log('Backend unavailable for learning profiles, using fallback');
+      console.log('Backend unavailable for test profiles, using fallback');
 
       const mockProfiles = Array.from({ length: parseInt(page_size) }, (_, index) => {
         const profileIndex = (parseInt(page) - 1) * parseInt(page_size) + index + 1;
         const profileAge = age_min ?
           parseInt(age_min) + Math.floor(Math.random() * ((age_max ? parseInt(age_max) : 35) - parseInt(age_min) + 1)) :
-          21 + Math.floor(Math.random() * 9); // Learning: 21-29
+          23 + Math.floor(Math.random() * 7); // Test: 23-29
 
         return {
-          id: `learning-${profileIndex}`,
+          id: `test-${profileIndex}`,
           age: profileAge,
           gender: gender || (Math.random() > 0.5 ? 'MALE' : 'FEMALE'),
-          mbti: mbti || ['INTJ', 'ENFP', 'ISTP', 'ESFJ'][Math.floor(Math.random() * 4)],
-          bio: `Learning dataset profile ${profileIndex}`,
-          interests: ['Technology', 'Music', 'Travel', 'Reading'].slice(0, 3),
+          mbti: mbti || ['INTJ', 'ENFP', 'ISTP', 'ESFJ', 'INFJ', 'ENTP'][Math.floor(Math.random() * 6)],
+          bio: `Test dataset profile ${profileIndex}`,
+          interests: ['Technology', 'Music', 'Travel', 'Reading', 'Sports', 'Art'].slice(0, 4),
           created_at: new Date(Date.now() - (profileIndex * 60 * 60 * 1000)).toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          dataset_type: datasetType
         };
       });
 
       return res.status(200).json({
         items: mockProfiles,
-        total: 3000,
+        total: 2000,
         page: parseInt(page),
         page_size: parseInt(page_size),
-        total_pages: Math.ceil(3000 / parseInt(page_size)),
+        total_pages: Math.ceil(2000 / parseInt(page_size)),
         _fallback: true,
-        _message: 'Using mock data for learning profiles - backend unavailable'
+        _message: 'Using mock data for test profiles - backend unavailable'
       });
     }
 
   } catch (error) {
-    console.error('Unexpected error in learning profiles handler:', error);
+    console.error('Unexpected error in test profiles handler:', error);
     return res.status(500).json({
       error: 'Internal server error',
       message: error.message

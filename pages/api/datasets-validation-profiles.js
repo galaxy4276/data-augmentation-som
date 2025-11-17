@@ -1,4 +1,4 @@
-// Vercel Serverless Function for /api/datasets/validation/profiles
+// Vercel Serverless Function for /api/datasets-validation-profiles
 const BACKEND_URL = 'http://119.67.194.202:31332';
 
 export default async function handler(req, res) {
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
       clearTimeout(timeoutId);
       console.log('Backend unavailable for validation profiles, using fallback');
 
-      // Return mock data as fallback
+      // Return mock data as fallback when backend is unavailable
       const mockProfiles = Array.from({ length: parseInt(page_size) }, (_, index) => {
         const profileIndex = (parseInt(page) - 1) * parseInt(page_size) + index + 1;
         const profileAge = age_min ?
@@ -77,33 +77,47 @@ export default async function handler(req, res) {
           id: `validation-${profileIndex}`,
           age: profileAge,
           gender: gender || (Math.random() > 0.5 ? 'MALE' : 'FEMALE'),
-          mbti: mbti || ['INTJ', 'ENFP', 'ISTP', 'ESFJ'][Math.floor(Math.random() * 4)],
+          mbti: mbti || ['INTJ', 'ENFP', 'ISTP', 'ESFJ', 'INFJ', 'ENTP'][Math.floor(Math.random() * 6)],
           bio: search ?
             `Validation profile ${profileIndex} - ${search}` :
             `Sample validation bio for profile ${profileIndex}`,
-          interests: ['Technology', 'Music', 'Travel', 'Reading']
+          interests: ['Technology', 'Music', 'Travel', 'Reading', 'Sports', 'Art', 'Photography', 'Cooking']
             .sort(() => Math.random() - 0.5)
-            .slice(0, 3),
+            .slice(0, 3 + Math.floor(Math.random() * 3)),
           created_at: new Date(Date.now() - (profileIndex * 60 * 60 * 1000)).toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          dataset_type: datasetType
         };
       });
 
-      return res.status(200).json({
+      const mockResponse = {
         items: mockProfiles,
         total: 1000,
         page: parseInt(page),
         page_size: parseInt(page_size),
         total_pages: Math.ceil(1000 / parseInt(page_size)),
         _fallback: true,
-        _message: 'Using mock data for validation profiles - backend unavailable'
-      });
+        _message: 'Using mock data for validation profiles - backend unavailable',
+        dataset_type: datasetType,
+        filters: {
+          gender: gender || null,
+          age_min: age_min || null,
+          age_max: age_max || null,
+          mbti: mbti || null,
+          search: search || null
+        },
+        timestamp: new Date().toISOString()
+      };
+
+      console.log(`Returning ${mockProfiles.length} mock validation profiles for page ${page}`);
+      return res.status(200).json(mockResponse);
     }
 
   } catch (error) {
     console.error('Unexpected error in validation profiles handler:', error);
     return res.status(500).json({
       error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
       message: error.message
     });
   }
