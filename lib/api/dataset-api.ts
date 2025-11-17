@@ -73,7 +73,6 @@ export const datasetApi = {
     filters?: Partial<ProfileFilters>,
   ): Promise<Blob> => {
     const response = await apiClient.get(`/export/${datasetType}`, {
-      params: filters,
       responseType: "blob",
     });
     return response.data;

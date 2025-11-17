@@ -62,12 +62,7 @@ export const taskApi = {
       search?: string;
     },
   ): Promise<TaskLogsResponse> => {
-    const endpoint =
-      taskType === "extraction"
-        ? `/extract/validation/${taskId}/logs`
-        : `/generate/augmentation/${taskId}/logs`;
-
-    const response = await apiClient.get<TaskLogsResponse>(endpoint, {
+    const response = await apiClient.get<TaskLogsResponse>(`/tasks/${taskId}/logs`, {
       params: {
         page: params?.page || 1,
         page_size: params?.page_size || 100,
@@ -98,13 +93,7 @@ export const taskApi = {
     taskId: string,
     taskType?: "extraction" | "augmentation",
   ): Promise<TaskStatusResponse> => {
-    // Default to augmentation endpoint for backward compatibility
-    const endpoint =
-      taskType === "extraction"
-        ? `/extract/validation/${taskId}/status`
-        : `/generate/images/${taskId}/status`;
-
-    const response = await apiClient.get<TaskStatusResponse>(endpoint);
+    const response = await apiClient.get<TaskStatusResponse>(`/tasks/${taskId}/status`);
     return response.data;
   },
 
