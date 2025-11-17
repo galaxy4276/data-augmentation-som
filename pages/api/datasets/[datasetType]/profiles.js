@@ -47,7 +47,7 @@ export default async function handler(req, res) {
         'User-Agent': 'Vercel-Serverless-Function',
       },
       timeout: 10000,
-      });
+    });
 
     console.log(`Backend response status: ${response.status}`);
 
@@ -67,12 +67,14 @@ export default async function handler(req, res) {
       response: error.response?.status,
     });
 
-    // Fallback mock data
+    // Enhanced fallback mock data
     const mockProfiles = Array.from({ length: parseInt(page_size) }, (_, index) => ({
       id: `${datasetType}-${page}-${index + 1}`,
       age: 20 + Math.floor(Math.random() * 40),
       gender: Math.random() > 0.5 ? 'MALE' : 'FEMALE',
       mbti: ['INTJ', 'ENFP', 'ISTP', 'ESFJ', 'INFJ', 'ENTP', 'ISFJ', 'ESTP'][Math.floor(Math.random() * 8)],
+      bio: `Sample bio for profile ${datasetType}-${page}-${index + 1}`,
+      interests: ['Technology', 'Music', 'Travel', 'Reading', 'Sports', 'Art', 'Photography', 'Cooking'].slice(0, 3 + Math.floor(Math.random() * 3)),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }));
@@ -85,7 +87,7 @@ export default async function handler(req, res) {
       total_pages: Math.ceil(1000 / parseInt(page_size))
     };
 
-    console.log('Returning fallback mock data due to error:', error.message);
+    console.log('Returning enhanced fallback mock data due to error:', error.message);
     res.status(200).json(mockData);
   }
 }
