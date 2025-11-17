@@ -1,5 +1,6 @@
 // Vercel Serverless Function for /api/extract/validation
 const BACKEND_URL = 'http://119.67.194.202:31332';
+const axios = require('axios');
 
 export default async function handler(req, res) {
   // CORS headers
@@ -22,39 +23,34 @@ export default async function handler(req, res) {
     console.log(`Attempting to POST to: ${BACKEND_URL}/api/extract/validation`);
     console.log('Request body:', req.body);
 
-    const response = await fetch(`${BACKEND_URL}/api/extract/validation`, {
-      method: 'POST',
+    const response = await axios.post(`${BACKEND_URL}/api/extract/validation`, req.body, {
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'Vercel-Serverless-Function',
       },
-      body: JSON.stringify(req.body),
-        });
+      timeout: 30000, // 30 second timeout for data extraction
+    });
 
     console.log(`Backend response status: ${response.status}`);
-
-    if (!response.ok) {
-      console.error(`Backend error: ${response.status} ${response.statusText}`);
-      throw new Error(`Backend responded with ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    console.log('Backend response data:', data);
-    res.status(200).json(data);
+    console.log('Backend response data:', response.data);
+    res.status(200).json(response.data);
   } catch (error) {
     console.error('Full error details:', {
       name: error.name,
       message: error.message,
       stack: error.stack,
-      cause: error.cause
+      code: error.code,
+      response: error.response?.status,
     });
 
     // Fallback mock response
     const mockResponse = {
       task_id: `extract-${Date.now()}`,
-      message: 'Validation dataset extraction started successfully'
+      message: 'Validation dataset extraction started successfully',
+      status: 'processing'
     };
 
+    console.log('Returning fallback mock response due to error:', error.message);
     res.status(200).json(mockResponse);
   }
 }
