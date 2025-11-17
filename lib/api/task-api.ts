@@ -44,7 +44,7 @@ export const taskApi = {
    */
   extractValidation: async (): Promise<ExtractValidationResponse> => {
     const response = await apiClient.post<ExtractValidationResponse>(
-      "/api/extract/validation",
+      "/extract/validation",
     );
     return response.data;
   },
@@ -64,8 +64,8 @@ export const taskApi = {
   ): Promise<TaskLogsResponse> => {
     const endpoint =
       taskType === "extraction"
-        ? `/api/extract/validation/${taskId}/logs`
-        : `/api/generate/augmentation/${taskId}/logs`;
+        ? `/extract/validation/${taskId}/logs`
+        : `/generate/augmentation/${taskId}/logs`;
 
     const response = await apiClient.get<TaskLogsResponse>(endpoint, {
       params: {
@@ -85,7 +85,7 @@ export const taskApi = {
     request: GenerateAugmentationRequest,
   ): Promise<GenerateAugmentationResponse> => {
     const response = await apiClient.post<GenerateAugmentationResponse>(
-      "/api/generate/augmentation",
+      "/generate/augmentation",
       request,
     );
     return response.data;
@@ -101,8 +101,8 @@ export const taskApi = {
     // Default to augmentation endpoint for backward compatibility
     const endpoint =
       taskType === "extraction"
-        ? `/api/extract/validation/${taskId}/status`
-        : `/api/generate/images/${taskId}/status`;
+        ? `/extract/validation/${taskId}/status`
+        : `/generate/images/${taskId}/status`;
 
     const response = await apiClient.get<TaskStatusResponse>(endpoint);
     return response.data;
@@ -115,7 +115,7 @@ export const taskApi = {
     request: GenerateImagesRequest,
   ): Promise<{ task_id: string }> => {
     const response = await apiClient.post<{ task_id: string }>(
-      "/api/augment/images",
+      "/augment/images",
       request,
     );
     return response.data;
@@ -128,7 +128,7 @@ export const taskApi = {
     request: GeneratePreferencesRequest,
   ): Promise<{ preferences: any }> => {
     const response = await apiClient.post<{ preferences: any }>(
-      "/api/augment/preferences",
+      "/augment/preferences",
       request,
     );
     return response.data;
