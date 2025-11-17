@@ -1,4 +1,4 @@
-// Vercel Serverless Function for /api/datasets/[datasetType]/profiles
+// Vercel Serverless Function for /api/datasets/validation/profiles
 const BACKEND_URL = 'http://119.67.194.202:31332';
 
 export default async function handler(req, res) {
@@ -20,20 +20,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Extract query parameters
-    const { datasetType } = req.query;
     const { page = 1, page_size = 50, gender, age_min, age_max, mbti, search } = req.query;
+    const datasetType = 'validation'; // Fixed for this endpoint
 
-    // Validate required parameters
-    if (!datasetType) {
-      return res.status(400).json({
-        error: 'Dataset type is required',
-        code: 'MISSING_DATASET_TYPE'
-      });
-    }
-
-    console.log(`Fetching profiles for dataset: ${datasetType}`);
-    console.log(`Backend URL: ${BACKEND_URL}/api/datasets/${datasetType}/profiles`);
+    console.log(`Fetching validation profiles - page ${page}, size ${page_size}`);
+    console.log(`Backend URL: ${BACKEND_URL}/api/datasets/validation/profiles`);
 
     // Build query parameters for backend
     const params = new URLSearchParams();
@@ -46,12 +37,12 @@ export default async function handler(req, res) {
     if (mbti) params.append('mbti', mbti);
     if (search) params.append('search', search);
 
-    // Attempt to fetch from backend with timeout
+    // Attempt to fetch from backend
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/datasets/${datasetType}/profiles?${params.toString()}`, {
+      const response = await fetch(`${BACKEND_URL}/api/datasets/validation/profiles?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -65,7 +56,7 @@ export default async function handler(req, res) {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Successfully fetched profiles from backend');
+        console.log('Successfully fetched validation profiles from backend');
         return res.status(200).json(data);
       } else {
         console.error(`Backend error: ${response.status} ${response.statusText}`);
@@ -73,64 +64,46 @@ export default async function handler(req, res) {
       }
     } catch (fetchError) {
       clearTimeout(timeoutId);
+      console.log('Backend unavailable for validation profiles, using fallback');
 
-      if (fetchError.name === 'AbortError') {
-        console.log('Backend request timed out');
-      } else {
-        console.log('Backend unavailable:', fetchError.message);
-      }
-
-      // Return mock data as fallback when backend is unavailable
+      // Return mock data as fallback
       const mockProfiles = Array.from({ length: parseInt(page_size) }, (_, index) => {
         const profileIndex = (parseInt(page) - 1) * parseInt(page_size) + index + 1;
         const profileAge = age_min ?
           parseInt(age_min) + Math.floor(Math.random() * ((age_max ? parseInt(age_max) : 35) - parseInt(age_min) + 1)) :
-          20 + Math.floor(Math.random() * 16);
+          22 + Math.floor(Math.random() * 8); // Validation: 22-29
 
         return {
-          id: `${datasetType}-${profileIndex}`,
+          id: `validation-${profileIndex}`,
           age: profileAge,
           gender: gender || (Math.random() > 0.5 ? 'MALE' : 'FEMALE'),
-          mbti: mbti || ['INTJ', 'ENFP', 'ISTP', 'ESFJ', 'INFJ', 'ENTP', 'ISFJ', 'ESTP'][Math.floor(Math.random() * 8)],
+          mbti: mbti || ['INTJ', 'ENFP', 'ISTP', 'ESFJ'][Math.floor(Math.random() * 4)],
           bio: search ?
-            `Sample bio for profile ${profileIndex} matching search: ${search}` :
-            `Sample bio for ${datasetType} profile ${profileIndex}`,
-          interests: ['Technology', 'Music', 'Travel', 'Reading', 'Sports', 'Art', 'Photography', 'Cooking']
+            `Validation profile ${profileIndex} - ${search}` :
+            `Sample validation bio for profile ${profileIndex}`,
+          interests: ['Technology', 'Music', 'Travel', 'Reading']
             .sort(() => Math.random() - 0.5)
-            .slice(0, 3 + Math.floor(Math.random() * 3)),
+            .slice(0, 3),
           created_at: new Date(Date.now() - (profileIndex * 60 * 60 * 1000)).toISOString(),
           updated_at: new Date().toISOString()
         };
       });
 
-      const mockResponse = {
+      return res.status(200).json({
         items: mockProfiles,
         total: 1000,
         page: parseInt(page),
         page_size: parseInt(page_size),
         total_pages: Math.ceil(1000 / parseInt(page_size)),
         _fallback: true,
-        _message: 'Using mock data - backend unavailable',
-        filters: {
-          dataset_type: datasetType,
-          gender: gender || null,
-          age_min: age_min || null,
-          age_max: age_max || null,
-          mbti: mbti || null,
-          search: search || null
-        },
-        timestamp: new Date().toISOString()
-      };
-
-      console.log(`Returning ${mockProfiles.length} mock profiles for page ${page}`);
-      return res.status(200).json(mockResponse);
+        _message: 'Using mock data for validation profiles - backend unavailable'
+      });
     }
 
   } catch (error) {
-    console.error('Unexpected error in profiles handler:', error);
+    console.error('Unexpected error in validation profiles handler:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      code: 'INTERNAL_ERROR',
       message: error.message
     });
   }
