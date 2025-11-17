@@ -88,7 +88,7 @@ function handleDatasets(req, res) {
 }
 
 // Handle profiles listing
-function handleProfiles(req, res, { datasetType, page, page_size, gender, age_min, age_max, mbti, search }) {
+async function handleProfiles(req, res, { datasetType, page, page_size, gender, age_min, age_max, mbti, search }) {
   console.log('Handling profiles for:', { datasetType, page, page_size });
 
   if (!datasetType) {
@@ -99,7 +99,58 @@ function handleProfiles(req, res, { datasetType, page, page_size, gender, age_mi
     });
   }
 
-  // Generate mock profiles
+  try {
+    // Try to get data from backend server
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10초 타임아웃
+
+    // Build query string for backend request
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      page_size: page_size.toString(),
+    });
+
+    if (gender) queryParams.append('gender', gender);
+    if (age_min) queryParams.append('age_min', age_min.toString());
+    if (age_max) queryParams.append('age_max', age_max.toString());
+    if (mbti) queryParams.append('mbti', mbti);
+    if (search) queryParams.append('search', search);
+
+    const response = await fetch(`${BACKEND_URL}/api/profiles/${datasetType}?${queryParams}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (response.ok) {
+      console.log(`Backend responded successfully for ${datasetType} profiles`);
+      const data = await response.json();
+
+      const responseData = {
+        items: data.items || [],
+        total: data.total || 0,
+        page: parseInt(page),
+        page_size: parseInt(page_size),
+        total_pages: Math.ceil((data.total || 0) / parseInt(page_size)),
+        dataset_type: datasetType,
+        endpoint: 'profiles',
+        timestamp: new Date().toISOString()
+      };
+
+      console.log(`Returning ${responseData.items.length} profiles from backend for ${datasetType}`);
+      return res.status(200).json(responseData);
+    } else {
+      console.log(`Backend failed with status ${response.status}, using mock data`);
+    }
+  } catch (error) {
+    console.log(`Backend request failed: ${error.message}, using mock data`);
+  }
+
+  // Fallback to mock profiles if backend fails
   const mockProfiles = Array.from({ length: parseInt(page_size) }, (_, index) => {
     const profileIndex = (parseInt(page) - 1) * parseInt(page_size) + index + 1;
     const baseAge = datasetType === 'validation' ? 22 : datasetType === 'test' ? 23 : 21;
@@ -135,12 +186,12 @@ function handleProfiles(req, res, { datasetType, page, page_size, gender, age_mi
     timestamp: new Date().toISOString()
   };
 
-  console.log(`Returning ${mockProfiles.length} profiles for ${datasetType}`);
+  console.log(`Returning ${mockProfiles.length} mock profiles for ${datasetType}`);
   return res.status(200).json(response);
 }
 
 // Handle export functionality
-function handleExport(req, res, { datasetType }) {
+async function handleExport(req, res, { datasetType }) {
   console.log('Handling export for:', datasetType);
 
   if (!datasetType) {
@@ -151,7 +202,38 @@ function handleExport(req, res, { datasetType }) {
     });
   }
 
-  // Generate mock CSV
+  try {
+    // Try to get data from backend server
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10초 타임아웃
+
+    const response = await fetch(`${BACKEND_URL}/api/export/${datasetType}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (response.ok) {
+      console.log(`Backend responded successfully for ${datasetType} export`);
+
+      // Set appropriate headers for CSV download
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="${datasetType}-dataset.csv"`);
+
+      // Stream the response from backend
+      return response.body.pipe(res);
+    } else {
+      console.log(`Backend failed with status ${response.status}, using mock data`);
+    }
+  } catch (error) {
+    console.log(`Backend request failed: ${error.message}, using mock data`);
+  }
+
+  // Fallback to mock CSV if backend fails
   const csvHeaders = 'id,age,gender,mbti,bio,interests,created_at,dataset_type\n';
 
   const mockRows = Array.from({ length: 5 }, (_, index) => {
@@ -169,6 +251,6 @@ function handleExport(req, res, { datasetType }) {
   res.setHeader('Content-Type', 'text/csv');
   res.setHeader('Content-Disposition', `attachment; filename="${datasetType}-dataset.csv"`);
 
-  console.log(`Returning CSV for ${datasetType}, size: ${mockCSV.length} bytes`);
+  console.log(`Returning mock CSV for ${datasetType}, size: ${mockCSV.length} bytes`);
   return res.status(200).send(mockCSV);
 }
