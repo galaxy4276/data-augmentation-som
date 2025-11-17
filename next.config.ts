@@ -7,14 +7,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://ml-backend-service:3000/api/:path*",
-      },
-    ];
-  },
-};
+  };
 
 export default nextConfig;
