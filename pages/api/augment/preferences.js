@@ -1,5 +1,5 @@
 // Vercel Serverless Function for /api/augment/preferences
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+const BACKEND_URL = 'http://119.67.194.202:31332';
 
 export default async function handler(req, res) {
   // CORS headers

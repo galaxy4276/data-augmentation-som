@@ -1,6 +1,5 @@
 // Vercel Serverless Function for /api/extract/validation
 const BACKEND_URL = 'http://119.67.194.202:31332';
-const axios = require('axios');
 
 export default async function handler(req, res) {
   // CORS headers
@@ -23,17 +22,19 @@ export default async function handler(req, res) {
     console.log(`Attempting to POST to: ${BACKEND_URL}/api/extract/validation`);
     console.log('Request body:', req.body);
 
-    const response = await axios.post(`${BACKEND_URL}/api/extract/validation`, req.body, {
+    const response = await fetch(`${BACKEND_URL}/api/extract/validation`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'Vercel-Serverless-Function',
       },
-      timeout: 30000, // 30 second timeout for data extraction
+      body: JSON.stringify(req.body)
     });
 
+    const data = await response.json();
     console.log(`Backend response status: ${response.status}`);
-    console.log('Backend response data:', response.data);
-    res.status(200).json(response.data);
+    console.log('Backend response data:', data);
+    res.status(response.status).json(data);
   } catch (error) {
     console.error('Full error details:', {
       name: error.name,
