@@ -10,14 +10,5 @@
     "pages/api/**/*.js": {
       "runtime": "nodejs18.x"
     }
-  },
-  "protection": {
-    "bypass": {
-      "routes": [
-        {
-          "src": "/api/(.*)"
-        }
-      ]
-    }
   }
 }
