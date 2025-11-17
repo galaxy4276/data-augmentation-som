@@ -108,7 +108,7 @@ async function handleProfiles(req, res, { datasetType, page, page_size, gender, 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      const response = await fetch(`${BACKEND_URL}/api/profiles/${datasetType}/${profileId}`, {
+      const response = await fetch(`${BACKEND_URL}/api/datasets/${datasetType}/profiles/${profileId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
