@@ -35,19 +35,21 @@ export const datasetApi = {
     datasetType: DatasetType,
     params: Partial<ProfileFilters & PaginationParams>,
   ): Promise<ProfileListResponse> => {
+    const queryParams = new URLSearchParams({
+      show: 'profiles',
+      datasetType,
+      page: (params.page || 1).toString(),
+      page_size: (params.page_size || 50).toString(),
+    });
+
+    if (params.gender) queryParams.append('gender', params.gender);
+    if (params.age_min) queryParams.append('age_min', params.age_min.toString());
+    if (params.age_max) queryParams.append('age_max', params.age_max.toString());
+    if (params.mbti) queryParams.append('mbti', params.mbti);
+    if (params.search) queryParams.append('search', params.search);
+
     const response = await apiClient.get<ProfileListResponse>(
-      `/datasets/${datasetType}/profiles`,
-      {
-        params: {
-          page: params.page || 1,
-          page_size: params.page_size || 50,
-          gender: params.gender,
-          age_min: params.age_min,
-          age_max: params.age_max,
-          mbti: params.mbti,
-          search: params.search,
-        },
-      },
+      `/datasets?${queryParams.toString()}`
     );
     return response.data;
   },
@@ -72,7 +74,7 @@ export const datasetApi = {
     datasetType: DatasetType,
     filters?: Partial<ProfileFilters>,
   ): Promise<Blob> => {
-    const response = await apiClient.get(`/export/${datasetType}`, {
+    const response = await apiClient.get(`/datasets?show=export&datasetType=${datasetType}`, {
       responseType: "blob",
     });
     return response.data;
