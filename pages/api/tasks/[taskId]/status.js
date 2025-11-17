@@ -1,11 +1,11 @@
 // Vercel Serverless Function for /api/tasks/[taskId]/status
-const BACKEND_URL = 'http://119.67.194.202:31332';
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Vercel-Serverless-Function',
+        'User-Agent': 'ML-Frontend-Vercel-Edge',
       },
     });
 

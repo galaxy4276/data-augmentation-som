@@ -1,12 +1,43 @@
 // Vercel Serverless Function for /api/datasets
-const BACKEND_URL = 'http://119.67.194.202:31332';
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 const axios = require('axios');
+
+// Mock data for fallback
+const mockDatasets = [
+  {
+    id: "validation",
+    name: "Validation Dataset",
+    type: "validation",
+    count: 1000,
+    description: "Student profile validation data",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: "test",
+    name: "Test Dataset",
+    type: "test",
+    count: 2000,
+    description: "Student profile test data",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: "learning",
+    name: "Learning Dataset",
+    type: "learning",
+    count: 3000,
+    description: "Student profile learning data",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+];
 
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -20,50 +51,35 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log(`Attempting to fetch: ${BACKEND_URL}/api/datasets`);
+    console.log(`Fetching datasets from: ${BACKEND_URL}/api/datasets`);
 
     const response = await axios.get(`${BACKEND_URL}/api/datasets`, {
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Vercel-Serverless-Function',
+        'User-Agent': 'ML-Frontend-Vercel-Edge',
       },
-      timeout: 10000, // 10 second timeout
+      timeout: 30000, // 30 second timeout
     });
 
     console.log(`Backend response status: ${response.status}`);
-    console.log('Backend response data:', response.data);
 
     res.status(200).json(response.data);
   } catch (error) {
-    console.error('Full error details:', {
-      name: error.name,
+    console.error('Backend connection failed:', {
       message: error.message,
-      stack: error.stack,
       code: error.code,
-      response: error.response?.status,
+      status: error.response?.status,
+      url: `${BACKEND_URL}/api/datasets`
     });
 
-    // Fallback mock data
-    const mockData = [
-      {
-        id: "1",
-        name: "Test Dataset",
-        type: "validation",
-        count: 100,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      {
-        id: "2",
-        name: "Training Dataset",
-        type: "training",
-        count: 200,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
-    ];
-
-    console.log('Returning fallback mock data due to error:', error.message);
-    res.status(200).json(mockData);
+    // Return enhanced mock data when backend is unavailable
+    console.log('Returning mock data fallback');
+    res.status(200).json({
+      datasets: mockDatasets,
+      total: mockDatasets.length,
+      _fallback: true,
+      _message: 'Using mock data - backend unavailable',
+      timestamp: new Date().toISOString()
+    });
   }
 }
