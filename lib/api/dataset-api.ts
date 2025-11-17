@@ -62,7 +62,7 @@ export const datasetApi = {
     profileId: string,
   ): Promise<ProfileData> => {
     const response = await apiClient.get<ProfileData>(
-      `/datasets/${datasetType}/profiles/${profileId}`,
+      `/datasets?show=profiles&datasetType=${datasetType}&profileId=${profileId}`,
     );
     return response.data;
   },

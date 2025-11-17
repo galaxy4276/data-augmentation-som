@@ -18,11 +18,11 @@ export default async function handler(req, res) {
     console.log('URL:', req.url);
     console.log('Query:', req.query);
 
-    const { show, datasetType, page = 1, page_size = 50, gender, age_min, age_max, mbti, search } = req.query;
+    const { show, datasetType, page = 1, page_size = 50, gender, age_min, age_max, mbti, search, profileId } = req.query;
 
     // Handle different API operations based on 'show' parameter
     if (show === 'profiles') {
-      return handleProfiles(req, res, { datasetType, page, page_size, gender, age_min, age_max, mbti, search });
+      return handleProfiles(req, res, { datasetType, page, page_size, gender, age_min, age_max, mbti, search, profileId });
     } else if (show === 'export') {
       return handleExport(req, res, { datasetType });
     } else {
@@ -88,8 +88,8 @@ function handleDatasets(req, res) {
 }
 
 // Handle profiles listing
-async function handleProfiles(req, res, { datasetType, page, page_size, gender, age_min, age_max, mbti, search }) {
-  console.log('Handling profiles for:', { datasetType, page, page_size });
+async function handleProfiles(req, res, { datasetType, page, page_size, gender, age_min, age_max, mbti, search, profileId }) {
+  console.log('Handling profiles for:', { datasetType, page, page_size, profileId });
 
   if (!datasetType) {
     return res.status(400).json({
